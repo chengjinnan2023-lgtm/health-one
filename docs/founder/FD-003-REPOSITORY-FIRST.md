@@ -25,6 +25,10 @@ AI Memory
 
 避免聊天上下文与真实项目状态不一致。
 
+## Rule
+
+Legacy runtime facts must be recorded in Repository before being used for architecture decisions.
+
 ## Applies To
 
 - ChatGPT

@@ -80,6 +80,26 @@ Legacy 工程中以下文件已被 Git 跟踪：
 
 ---
 
+### SEC-002: Runtime secrets exposed in systemd service files
+
+**Finding:**
+Legacy server systemd service files contain production-like secrets in Environment variables, including AI provider key, SMTP password, JWT secret, Store API token, and ADP app key.
+
+**Status:** Open
+
+**Risk Level:** High
+
+**Decision:**
+- Treat these secrets as exposed.
+- Rotate before any continued production use.
+- Do not migrate any runtime secrets into health-one.
+- Use `.env.example` and secret management in Health One v2.
+- All future server config output must be redacted before sharing.
+
+**Owner:** Development Office / Security Review
+
+---
+
 ## 5. Risks
 
 | # | Risk | Mitigation |
