@@ -1,3 +1,23 @@
+## Health One Project Entry
+
+Health One 的项目入口文档：
+
+1. [docs/00-CONSTITUTION.md](docs/00-CONSTITUTION.md) — 项目宪章
+2. [docs/01-GOVERNANCE.md](docs/01-GOVERNANCE.md) — 项目治理规范
+3. [docs/02-AI_START_HERE.md](docs/02-AI_START_HERE.md) — AI 进入指南
+4. [docs/03-PROJECT_MAP.md](docs/03-PROJECT_MAP.md) — 项目地图
+5. [docs/04-PROJECT_MEMORY.md](docs/04-PROJECT_MEMORY.md) — 项目记忆
+6. [docs/05-PROJECT_CONTEXT.md](docs/05-PROJECT_CONTEXT.md) — 项目上下文
+7. [docs/06-GLOSSARY.md](docs/06-GLOSSARY.md) — 术语表
+
+**任何 AI、开发者或协作者进入项目，必须先阅读以上文件。**
+
+> **Canonical Source Notice (M0.5):** `docs/` 编号文件为正式项目事实来源。
+> 根目录同名文件（如 `AI_START_HERE.md`、`PROJECT-MAP.md` 等）已改为 Redirect，
+> 仅保留向后兼容，不再维护完整内容。请始终使用 `docs/` 路径。
+
+---
+
 # Health One
 
 Health One is a long-term health management ecosystem project.
