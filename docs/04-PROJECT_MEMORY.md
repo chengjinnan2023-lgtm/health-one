@@ -115,6 +115,20 @@ AI
 
 ---
 
+**2026-06-28**
+
+FD-005 Legacy Freeze。
+
+3号工程、1号工程永久冻结。
+
+不再新增功能、不再修复 Bug、不再作为开发仓库。
+
+Legacy Runtime `/www/server/xixi/` 仅作为运行事实参考。
+
+Health One 为唯一开发仓库。
+
+---
+
 ## 6. Current AI Role Model
 
 Current ChatGPT role:
