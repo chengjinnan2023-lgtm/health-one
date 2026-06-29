@@ -100,6 +100,18 @@ Audience: AI development, Prompt engineers.
 
 ---
 
+# Brand
+
+Location: `docs/brand`
+
+Purpose: Brand materials, pitch decks, cooperation proposals, store alliance documents.
+
+Contains: PITCH-001 Store Alliance Plan V1.1.
+
+Audience: Founder, Brand Office, alliance stores.
+
+---
+
 # Business
 
 Location: `docs/04_Business`

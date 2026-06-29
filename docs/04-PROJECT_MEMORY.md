@@ -678,7 +678,21 @@ Current major Baseline groups:
 
 ---
 
-## 25. End of Document
+## 25. Brand & Cooperation
+
+**2026-06-29**
+
+PITCH-001｜Health One 门店联盟合作方案 V1.1 已作为正式联盟合作资料入库。
+
+该方案确立了 Health One 门店合作叙事：从卖项目升级为经营客户健康元；纯石墨烯舱为当前第一入口，但不是唯一入口。
+
+PPT 正式文件：`docs/brand/assets/PITCH-001-Health-One-Store-Alliance-Plan-V1.1.pptx`
+
+Markdown 知识库文档：`docs/brand/pitch/PITCH-001-Health-One-Store-Alliance-Plan-V1.1.md`
+
+---
+
+## 26. End of Document
 
 PROJECT-MEMORY.md is the short working memory of Health One.
 
