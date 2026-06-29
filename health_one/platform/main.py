@@ -6,6 +6,7 @@ from fastapi import FastAPI
 
 from health_one.platform.config import get_platform_settings
 from health_one.platform.database import check_db_connection
+from health_one.platform.routers import identity, profile, timeline
 
 
 @asynccontextmanager
@@ -22,6 +23,12 @@ app = FastAPI(
     version=get_platform_settings().APP_VERSION,
     lifespan=lifespan,
 )
+
+
+# Register API routers
+app.include_router(identity.router)
+app.include_router(profile.router)
+app.include_router(timeline.router)
 
 
 @app.get("/health")

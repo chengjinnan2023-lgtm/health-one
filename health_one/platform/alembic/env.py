@@ -8,6 +8,10 @@ from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+# Import all models so they register with Base.metadata for autogenerate
+import health_one.platform.models.identity  # noqa: F401
+import health_one.platform.models.profile  # noqa: F401
+import health_one.platform.models.timeline  # noqa: F401
 from health_one.platform.database import Base
 
 # Alembic Config object

@@ -20,6 +20,12 @@ select = [
 ]
 ignore = [
     "E501", # line too long (handled by formatter)
+    "B008", # Depends/Query in FastAPI defaults — idiomatic pattern
+]
+
+[tool.ruff.lint.per-file-ignores]
+"health_one/platform/models/*.py" = [
+    "F821", # SQLAlchemy relationship() forward references across model files
 ]
 
 [tool.ruff.format]
