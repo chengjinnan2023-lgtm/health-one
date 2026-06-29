@@ -717,6 +717,18 @@ PDF 文档：`docs/business/partner/assets/PARTNER-001-Store-Alliance-One-Pager-
 
 Markdown 知识库：`docs/business/partner/PARTNER-001-Store-Alliance-One-Pager-V0.2.md`
 
+**2026-06-29**
+
+PARTNER-002｜烯晞健康 Health One 门店合作 FAQ V0.1 已入库，作为 PITCH-001 门店联盟合作方案与 PARTNER-001 一页纸的配套答疑资料。
+
+该文件用于解释项目定位、合作费用、设备责任、AI 赋能、收益边界、落地路径与合规边界，帮助门店老板在合作沟通过程中快速理解 Health One 样板门店联盟合作模式。
+
+Word 文档：`docs/business/partner/assets/PARTNER-002-Store-Alliance-FAQ-V0.1.docx`
+
+PDF 文档：`docs/business/partner/assets/PARTNER-002-Store-Alliance-FAQ-V0.1.pdf`
+
+Markdown 知识库：`docs/business/partner/PARTNER-002-Store-Alliance-FAQ-V0.1.md`
+
 ---
 
 ## 26. End of Document
