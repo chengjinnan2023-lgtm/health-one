@@ -690,6 +690,18 @@ PPT 正式文件：`docs/brand/assets/PITCH-001-Health-One-Store-Alliance-Plan-V
 
 Markdown 知识库文档：`docs/brand/pitch/PITCH-001-Health-One-Store-Alliance-Plan-V1.1.md`
 
+**2026-06-29**
+
+PARTNER-001｜烯晞健康 Health One 门店联盟合作方案 V0.2 已入库，作为 PITCH-001 门店联盟合作方案的配套一页纸。
+
+该文件用于微信发送、会前预热和门店老板快速了解合作模式，重点表达：Health One 不是给门店增加一个项目，而是帮助门店建立未来十年的客户经营能力。
+
+Word 文档：`docs/business/partner/assets/PARTNER-001-Store-Alliance-One-Pager-V0.2.docx`
+
+PDF 文档：`docs/business/partner/assets/PARTNER-001-Store-Alliance-One-Pager-V0.2.pdf`
+
+Markdown 知识库：`docs/business/partner/PARTNER-001-Store-Alliance-One-Pager-V0.2.md`
+
 ---
 
 ## 26. End of Document

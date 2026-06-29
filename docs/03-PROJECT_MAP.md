@@ -122,6 +122,18 @@ Status: Not yet expanded.
 
 ---
 
+# Partner
+
+Location: `docs/business/partner`
+
+Purpose: Store-facing one-pagers, partner communication materials, cooperation collateral.
+
+Contains: PARTNER-001 Store Alliance One-Pager V0.2（PITCH-001 配套门店沟通一页纸）.
+
+Audience: Alliance stores, potential sample store owners, operations.
+
+---
+
 # Engineering
 
 Location: `docs/05_Engineering`
