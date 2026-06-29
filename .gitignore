@@ -20,13 +20,12 @@ __pycache__/
 *.pyo
 .venv/
 
-# Database
-data/*.db
-data/*.sqlite3
-data/store-*/store.db
+# Database — all SQLite runtime files (*.db, *.db-wal, *.db-shm)
+data/
 
 # Uploads (local dev)
-data/uploads/*
+# (covered by data/ above; keep for documentation)
+# data/uploads/*
 
 # Node
 frontend/node_modules/

@@ -7,6 +7,10 @@ from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+import health_one.store.models.staff  # noqa: F401
+
+# Import all models so they register with Base.metadata for autogenerate
+import health_one.store.models.store  # noqa: F401
 from health_one.store.config import get_store_settings
 from health_one.store.database import Base
 

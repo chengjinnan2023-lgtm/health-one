@@ -27,6 +27,9 @@ ignore = [
 "health_one/platform/models/*.py" = [
     "F821", # SQLAlchemy relationship() forward references across model files
 ]
+"health_one/store/models/*.py" = [
+    "F821", # SQLAlchemy relationship() forward references across model files
+]
 
 [tool.ruff.format]
 quote-style = "double"
