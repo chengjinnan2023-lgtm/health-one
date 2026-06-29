@@ -4,11 +4,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./auth/AuthContext";
 import BaseLayout from "./layouts/BaseLayout";
 import LoginScreen from "./screens/LoginScreen";
-import {
-  CustomerSearchScreen,
-  CustomerSummaryScreen,
-  ConcernIntakeScreen,
-} from "./screens/PlaceholderScreens";
+import CustomerSearchScreen from "./screens/CustomerSearchScreen";
+import CustomerSummaryScreen from "./screens/CustomerSummaryScreen";
+import ConcernIntakeScreen from "./screens/ConcernIntakeScreen";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
