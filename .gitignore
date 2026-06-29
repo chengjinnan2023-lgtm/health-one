@@ -13,6 +13,32 @@
 .env
 .env.local
 
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Database
+data/*.db
+data/*.sqlite3
+data/store-*/store.db
+
+# Uploads (local dev)
+data/uploads/*
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+playwright-report/
+test-results/
+
 # Temporary files
 tmp/
 temp/
