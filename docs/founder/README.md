@@ -26,3 +26,12 @@
 - Sprint
 - Milestone
 - Review
+
+## FD Index
+
+| ID | Title | Status |
+|----|-------|--------|
+| FD-003 | Repository First | Active |
+| FD-004 | Decision Persistence | Active |
+| FD-005 | Legacy Freeze | Active |
+| FD-006 | Version Governance | Active |

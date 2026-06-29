@@ -129,6 +129,21 @@ Health One 为唯一开发仓库。
 
 ---
 
+**2026-06-29**
+
+FD-006 Version Governance。
+
+建立版本治理规则：
+
+* Sprint 是开发节奏，Version 代表产品状态。
+* Release Status 五级：Development → Development Complete → Release Candidate → Pilot → Production。
+* Release Candidate / Pilot / Production 仅 Founder 可批准。
+* 每个 Version 必须对应 annotated Git tag。
+* VERSION.md 为唯一版本真相源。
+* Legacy 仓库永不接收新版本或新功能开发。
+
+---
+
 ## 6. Current AI Role Model
 
 Current ChatGPT role:
