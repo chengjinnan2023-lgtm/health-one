@@ -729,6 +729,16 @@ PDF 文档：`docs/business/partner/assets/PARTNER-002-Store-Alliance-FAQ-V0.1.p
 
 Markdown 知识库：`docs/business/partner/PARTNER-002-Store-Alliance-FAQ-V0.1.md`
 
+**2026-06-30**
+
+BRAND-001｜Health One Brand Guideline V1.0 已作为品牌根文档建立 Draft 版本。
+
+当前已确认 6 个章节：品牌定位、品牌架构、品牌语气、视觉方向、品牌色系统、字体规范。
+
+Health One / 健康元由新公司承接，烯晞健康作为生态合作品牌，当前专注烯灸舱入口合作。
+
+品牌根文档：`docs/brand/BRAND-001-Health-One-Brand-Guideline-V1.0.md`
+
 ---
 
 ## 26. End of Document
