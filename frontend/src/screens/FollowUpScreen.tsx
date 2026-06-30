@@ -108,8 +108,9 @@ export default function FollowUpScreen() {
           <button type="submit" disabled={saving || !method || !plannedAt}
             className="bg-blue-600 text-white px-6 py-2 rounded text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
             data-testid="create-followup-btn">{saving ? "创建中…" : "创建随访"}</button>
-          <button type="button" onClick={() => navigate(`/customers/${id}`)} className="text-gray-500 px-4 py-2 text-sm">跳过</button>
+          <button type="button" onClick={() => navigate(`/customers/${id}`)} className="text-gray-500 px-4 py-2 text-sm">跳过（稍后补录）</button>
         </div>
+        <p className="text-xs text-gray-400">创建随访后可在客户总览页查看和标记完成</p>
       </form>
     </div>
   );

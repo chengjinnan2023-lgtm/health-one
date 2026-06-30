@@ -65,10 +65,10 @@ export default function ServiceRecordScreen() {
         <div className="flex gap-2 pt-2">
           <button type="submit" disabled={saving || !serviceType || !staff}
             className="bg-blue-600 text-white px-6 py-2 rounded text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
-            data-testid="save-btn">{saving ? "保存中…" : "保存服务记录"}</button>
+            data-testid="save-btn">{saving ? "保存中…" : "保存并继续 →"}</button>
           <button type="button" onClick={() => navigate(`/customers/${id}`)} className="text-gray-500 px-4 py-2 text-sm">返回</button>
         </div>
-        <p className="text-xs text-gray-400">必填：服务类型 + 内容 ≤ 5 项</p>
+        <p className="text-xs text-gray-400">必填：服务类型 + 内容 ≤ 5 项 · 保存后自动进入服务反馈</p>
       </form>
     </div>
   );

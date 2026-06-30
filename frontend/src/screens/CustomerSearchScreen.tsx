@@ -22,14 +22,33 @@ export default function CustomerSearchScreen() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<HealthIdentity[]>([]);
   const [searching, setSearching] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState("");
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
 
+  // Load recent customers on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await api.get<HealthIdentity[]>("/api/identities/?limit=10");
+        setResults(data);
+      } catch { /* silent — search bar still works */ }
+      finally { setInitialLoading(false); }
+    })();
+  }, []);
+
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const doSearch = useCallback(async (q: string) => {
-    if (!q.trim()) { setResults([]); return; }
+    if (!q.trim()) {
+      // Reset to recent list
+      try {
+        const data = await api.get<HealthIdentity[]>("/api/identities/?limit=10");
+        setResults(data);
+      } catch { setError("加载失败，请重试"); }
+      return;
+    }
     setSearching(true); setError("");
     try {
       const data = await api.get<HealthIdentity[]>(`/api/identities/?q=${encodeURIComponent(q)}&limit=20`);
@@ -39,6 +58,7 @@ export default function CustomerSearchScreen() {
   }, []);
 
   useEffect(() => {
+    if (!query.trim()) return; // handled by initial load + reset in doSearch
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => doSearch(query), 300);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
@@ -91,11 +111,12 @@ export default function CustomerSearchScreen() {
         </form>
       )}
 
+      {initialLoading && <p className="text-gray-400 text-sm">加载中…</p>}
       {searching && <p className="text-gray-400 text-sm">搜索中…</p>}
-      {!searching && query && results.length === 0 && (
+      {!initialLoading && !searching && results.length === 0 && (
         <div className="text-center py-8 text-gray-400">
-          <p>未找到 "{query}" 相关客户</p>
-          <button onClick={() => setShowCreate(true)} className="text-blue-600 text-sm mt-2 hover:underline">新建客户</button>
+          {query ? <p>未找到 "{query}" 相关客户</p> : <p>暂无客户数据</p>}
+          <button onClick={() => setShowCreate(true)} className="text-blue-600 text-sm mt-2 hover:underline">新建第一位客户</button>
         </div>
       )}
       {results.length > 0 && (
