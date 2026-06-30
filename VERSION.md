@@ -2,7 +2,7 @@
 
 ## v0.3.1 — Manual Loop Stabilized
 
-**Release Status:** Release Candidate Preparation
+**Release Status:** Release Candidate
 
 **Date:** 2026-06-30
 
