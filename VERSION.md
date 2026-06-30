@@ -1,5 +1,99 @@
 # Health One Version History
 
+## v0.3.1 — Manual Loop Stabilized
+
+**Release Status:** Release Candidate Preparation
+
+**Date:** 2026-06-30
+
+**Architecture:** ARCH-000 Approved
+
+### Major Changes
+
+- **BUG-006 fixed** — Timeline enum displays Chinese value (健康舱) not enum name
+- **S2 Enhanced Summary** — Service history + follow-up status visible on Customer Summary
+- **Integration tests added** — 8 tests for Service Session + Health Plan APIs
+- **E2E manual loop test** — Playwright 8-step full loop verification
+- **Deployment checklist** — PostgreSQL + Nginx + systemd deployment guide
+- **Backup/restore checklist** — pg_dump + SQLite backup with cron schedule
+
+### Previous Sprint-3 Features
+
+- Service Session recording + API (5 endpoints)
+- Customer Feedback capture (PATCH /sessions)
+- Follow-Up Task / Health Plan (4 endpoints)
+- S4–S6 Store Workbench screens
+- Auth middleware wired to all routes
+- 24 API endpoints total, all JWT-protected
+
+### Database
+
+| Database | Tables | Migration |
+|----------|--------|-----------|
+| Platform DB (PostgreSQL) | health_identity, health_profile, health_timeline, service_session, health_plan | 001–003 |
+| Store DB (SQLite) | store, staff | 001 |
+
+### Known Limitations
+
+- S2 enhanced but service/follow-up data requires API call (loaded async)
+- Integration + E2E tests CI-ready (need PostgreSQL + API running)
+- No real store deployment yet (checklists prepared)
+- Frontend JWT in localStorage (acceptable for internal pilot)
+- Single-store only (multi-store post-MVP)
+
+### Git Milestones (Sprint-3)
+
+- `b019b9d` — feat(sprint-3): wire auth middleware (DEV-030-031)
+- `a19187d` — feat(sprint-3): Service Session (DEV-032-034)
+- `1667d9c` — feat(sprint-3): S5 Feedback (DEV-035)
+- `2aab527` — feat(sprint-3): Follow-Up + Health Plan (DEV-036-038)
+
+### QA Reports
+
+- `QA-BATCH-007` — Service Session Review
+- `QA-BATCH-008` — Feedback Screen Review
+- `QA-BATCH-009` — Follow-Up Review
+
+### Release Gate
+
+- `RELEASE-GATE-002` — Sprint-3 Final Review (GO — Manual Service Loop Complete)
+- `DEMO-003` — Manual Loop Validation (PASS — 13/13 checks)
+
+### Next Target
+
+**Sprint-4** — AI Integration (F6 AI Summary, F11 Knowledge, F13 Dashboard)
+
+---
+
+## v0.3.0 — Manual Service Loop Complete
+
+**Release Status:** Development Complete
+
+**Date:** 2026-06-30
+
+**Architecture:** ARCH-000 Approved
+
+### Major Features
+
+- **Manual Service Closed Loop** — S1→S2→S3→S4→S5→S6→S2 full loop functional
+- **Service Session** — Record store service delivery (RFC-002 §3.5)
+- **Customer Feedback** — Capture post-service feedback (F4)
+- **Follow-Up Task** — Health Plan with follow_up_schedule (F5)
+- **Auth Middleware** — JWT wired to all 24 API endpoints
+- **Sprint-2 Cleanup** — S1 debounce, S2 pending concern, S3 healthGoal/phone
+
+### Database
+
+| Database | Tables | Migration |
+|----------|--------|-----------|
+| Platform DB (PostgreSQL) | +service_session, +health_plan | 002, 003 |
+
+### API (24 endpoints total, +9 from Sprint-2)
+
+`POST/GET /api/identities/{id}/sessions`, `GET/PATCH /api/identities/{id}/sessions/{sid}`, `POST /api/identities/{id}/sessions/{sid}/complete`, `POST/GET /api/identities/{id}/plans`, `GET/PATCH /api/identities/{id}/plans/{pid}`
+
+---
+
 ## v0.2.0 — Sprint-2 Development Complete
 
 **Release Status:** Development Complete / Release Deferred

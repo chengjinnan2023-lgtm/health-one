@@ -1,13 +1,8 @@
-// Health One — S2: Customer 健康元 Summary (DEV-018).
+// Health One — S2: Customer 健康元 Summary (DEV-018 + DEV-039 enhanced).
 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  api,
-  type HealthIdentity,
-  type HealthProfile,
-  type TimelineEntry,
-} from "../api/client";
+import { api, type HealthIdentity, type HealthProfile, type TimelineEntry } from "../api/client";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -15,12 +10,33 @@ const STATUS_COLORS: Record<string, string> = {
   archived: "bg-gray-100 text-gray-500",
 };
 
+interface SessionSummary {
+  session_id: string;
+  service_type: string;
+  started_at: string;
+  completed_at: string | null;
+  customer_feedback: string | null;
+}
+
+interface PlanSummary {
+  plan_id: string;
+  plan_status: string;
+  follow_up_schedule: {
+    method?: string;
+    planned_at?: string;
+    status?: string;
+    result?: string;
+  } | null;
+}
+
 export default function CustomerSummaryScreen() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [identity, setIdentity] = useState<HealthIdentity | null>(null);
   const [profile, setProfile] = useState<HealthProfile | null>(null);
   const [entries, setEntries] = useState<TimelineEntry[]>([]);
+  const [sessions, setSessions] = useState<SessionSummary[]>([]);
+  const [plans, setPlans] = useState<PlanSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -33,21 +49,19 @@ export default function CustomerSummaryScreen() {
     setLoading(true);
     setError("");
     try {
-      const [i, p, t] = await Promise.all([
+      const [i, p, t, s, pl] = await Promise.all([
         api.get<HealthIdentity>(`/api/identities/${id}`),
-        api
-          .get<HealthProfile>(`/api/identities/${id}/profile`)
-          .catch(() => null),
-        api
-          .get<{ entries: TimelineEntry[] }>(
-            `/api/identities/${id}/timeline?limit=10`,
-          )
-          .then((r) => r.entries)
-          .catch(() => []),
+        api.get<HealthProfile>(`/api/identities/${id}/profile`).catch(() => null),
+        api.get<{ entries: TimelineEntry[] }>(`/api/identities/${id}/timeline?limit=10`)
+          .then((r) => r.entries).catch(() => []),
+        api.get<SessionSummary[]>(`/api/identities/${id}/sessions?limit=5`).catch(() => []),
+        api.get<PlanSummary[]>(`/api/identities/${id}/plans?limit=5`).catch(() => []),
       ]);
       setIdentity(i);
-      setProfile(p);
+      setProfile(p as HealthProfile | null);
       setEntries(t);
+      setSessions(s);
+      setPlans(pl);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load");
     } finally {
@@ -58,30 +72,18 @@ export default function CustomerSummaryScreen() {
   async function handleActivate() {
     if (!id) return;
     try {
-      const updated = await api.post<HealthIdentity>(
-        `/api/identities/${id}/activate`,
-      );
-      setIdentity(updated);
-      loadData(); // refresh timeline
+      await api.post<HealthIdentity>(`/api/identities/${id}/activate`);
+      loadData();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Activate failed");
     }
   }
 
   if (loading) {
-    return (
-      <div className="text-center py-12 text-gray-400" data-testid="screen-s2">
-        Loading...
-      </div>
-    );
+    return <div className="text-center py-12 text-gray-400" data-testid="screen-s2">Loading...</div>;
   }
-
   if (error || !identity) {
-    return (
-      <div className="text-center py-12 text-red-500" data-testid="screen-s2">
-        {error || "Customer not found"}
-      </div>
-    );
+    return <div className="text-center py-12 text-red-500" data-testid="screen-s2">{error || "Customer not found"}</div>;
   }
 
   return (
@@ -89,103 +91,110 @@ export default function CustomerSummaryScreen() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            {identity.display_name}
-          </h1>
-          <span
-            className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[identity.activation_status]}`}
-          >
+          <h1 className="text-2xl font-bold text-gray-800">{identity.display_name}</h1>
+          <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[identity.activation_status]}`}>
             {identity.activation_status}
           </span>
         </div>
         <div className="flex gap-2">
           {identity.activation_status === "pending" && (
-            <button
-              onClick={handleActivate}
-              className="bg-green-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-green-700"
-              data-testid="activate-btn"
-            >
+            <button onClick={handleActivate} className="bg-green-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-green-700" data-testid="activate-btn">
               Activate 健康元
             </button>
           )}
           {identity.activation_status !== "archived" && (
-            <button
-              onClick={() => navigate(`/customers/${id}/concern`)}
-              className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700"
-              data-testid="record-concern-btn"
-            >
+            <button onClick={() => navigate(`/customers/${id}/concern`)} className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700" data-testid="record-concern-btn">
               Record Concern
             </button>
           )}
           {identity.activation_status === "active" && (
-            <button
-              onClick={() => navigate(`/customers/${id}/service`)}
-              className="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-indigo-700"
-              data-testid="new-service-btn"
-            >
+            <button onClick={() => navigate(`/customers/${id}/service`)} className="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-indigo-700" data-testid="new-service-btn">
               New Service
             </button>
           )}
         </div>
       </div>
 
-      {/* Health Profile */}
-      <section className="bg-white border rounded-lg p-6 mb-4">
-        <h2 className="text-lg font-semibold mb-3">Health Profile</h2>
-        {profile ? (
-          <dl className="grid grid-cols-2 gap-3 text-sm">
-            {profile.basic_info &&
-              Object.entries(profile.basic_info).map(([k, v]) => (
-                <div key={k}>
-                  <dt className="text-gray-500 text-xs uppercase">{k}</dt>
-                  <dd className="text-gray-800">{String(v)}</dd>
-                </div>
-              ))}
-            {profile.primary_concern && (
-              <div className="col-span-2">
-                <dt className="text-gray-500 text-xs uppercase">
-                  Primary Concern
-                </dt>
-                <dd className="text-gray-800">{profile.primary_concern}</dd>
-              </div>
-            )}
-            {profile.lifestyle_notes && (
-              <div className="col-span-2">
-                <dt className="text-gray-500 text-xs uppercase">Lifestyle</dt>
-                <dd className="text-gray-600 text-sm">
-                  {profile.lifestyle_notes}
-                </dd>
-              </div>
-            )}
-          </dl>
-        ) : (
-          <p className="text-gray-400 text-sm">No health profile yet.</p>
-        )}
-      </section>
+      <div className="grid grid-cols-2 gap-4">
+        {/* Left column */}
+        <div className="space-y-4">
+          {/* Health Profile */}
+          <section className="bg-white border rounded-lg p-4">
+            <h2 className="text-base font-semibold mb-2">Health Profile</h2>
+            {profile ? (
+              <dl className="text-sm space-y-1">
+                {profile.basic_info && Object.entries(profile.basic_info).map(([k, v]) => (
+                  <div key={k}><dt className="text-gray-500 text-xs inline">{k}: </dt><dd className="text-gray-800 inline">{String(v)}</dd></div>
+                ))}
+                {profile.primary_concern && <p className="text-gray-800 mt-1">{profile.primary_concern}</p>}
+              </dl>
+            ) : <p className="text-gray-400 text-sm">No health profile yet.</p>}
+          </section>
 
-      {/* Recent Timeline */}
-      <section className="bg-white border rounded-lg p-6">
-        <h2 className="text-lg font-semibold mb-3">Recent Timeline</h2>
-        {entries.length > 0 ? (
-          <ul className="space-y-2 text-sm">
-            {entries.map((e) => (
-              <li key={e.entry_id} className="flex gap-3 text-gray-700">
-                <span className="text-gray-400 text-xs w-28 shrink-0">
-                  {new Date(e.timestamp).toLocaleString()}
-                </span>
-                <span>
-                  <span className="text-gray-500 text-xs mr-2">
-                    [{e.event_type}]
-                  </span>
-                  {e.summary_text}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-400 text-sm">No timeline entries yet.</p>
-        )}
-      </section>
+          {/* Service History (DEV-039) */}
+          <section className="bg-white border rounded-lg p-4">
+            <h2 className="text-base font-semibold mb-2">Service History</h2>
+            {sessions.length > 0 ? (
+              <ul className="text-sm space-y-2">
+                {sessions.map((s) => (
+                  <li key={s.session_id} className="border-b pb-1 last:border-0">
+                    <div className="flex justify-between">
+                      <span className="font-medium">{s.service_type}</span>
+                      <span className="text-xs text-gray-400">{new Date(s.started_at).toLocaleDateString()}</span>
+                    </div>
+                    {s.customer_feedback && <p className="text-gray-500 text-xs mt-0.5 truncate">{s.customer_feedback.slice(0, 60)}</p>}
+                    <span className={`text-xs ${s.completed_at ? "text-green-600" : "text-yellow-600"}`}>
+                      {s.completed_at ? "✓ completed" : "in progress"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="text-gray-400 text-sm">No service records yet.</p>}
+          </section>
+        </div>
+
+        {/* Right column */}
+        <div className="space-y-4">
+          {/* Follow-Up Status (DEV-039) */}
+          <section className="bg-white border rounded-lg p-4">
+            <h2 className="text-base font-semibold mb-2">Follow-Up</h2>
+            {plans.length > 0 ? (
+              <ul className="text-sm space-y-2">
+                {plans.map((p) => {
+                  const fs = p.follow_up_schedule;
+                  return (
+                    <li key={p.plan_id} className="border-b pb-1 last:border-0">
+                      <div className="flex justify-between">
+                        <span className={`text-xs px-1.5 py-0.5 rounded ${p.plan_status === "completed" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
+                          {p.plan_status}
+                        </span>
+                        {fs?.method && <span className="text-gray-500 text-xs">{fs.method}</span>}
+                      </div>
+                      {fs?.planned_at && <p className="text-gray-400 text-xs">Planned: {new Date(fs.planned_at).toLocaleDateString()}</p>}
+                      {fs?.result && <p className="text-gray-600 text-xs mt-0.5 truncate">{fs.result.slice(0, 60)}</p>}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : <p className="text-gray-400 text-sm">No follow-up tasks yet.</p>}
+          </section>
+
+          {/* Recent Timeline */}
+          <section className="bg-white border rounded-lg p-4">
+            <h2 className="text-base font-semibold mb-2">Recent Timeline</h2>
+            {entries.length > 0 ? (
+              <ul className="text-xs space-y-1.5">
+                {entries.slice(0, 6).map((e) => (
+                  <li key={e.entry_id} className="flex gap-2 text-gray-600">
+                    <span className="text-gray-400 w-16 shrink-0">{new Date(e.timestamp).toLocaleTimeString()}</span>
+                    <span><span className="text-gray-400">[{e.event_type}]</span> {e.summary_text.slice(0, 60)}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="text-gray-400 text-sm">No timeline entries yet.</p>}
+          </section>
+        </div>
+      </div>
     </div>
   );
 }

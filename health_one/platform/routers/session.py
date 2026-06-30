@@ -133,7 +133,7 @@ async def update_session(
             event_type="service_completed",
             source_object_type="ServiceSession",
             source_object_id=session.session_id,
-            summary_text=f"Service completed: {session.service_type}"
+            summary_text=f"Service completed: {session.service_type.value}"
             + (f" — {session.service_detail[:50]}" if session.service_detail else ""),
             performed_by=staff.staff_id,
         )
@@ -172,7 +172,7 @@ async def complete_session(
         event_type="service_completed",
         source_object_type="ServiceSession",
         source_object_id=session.session_id,
-        summary_text=f"Service completed: {session.service_type}"
+        summary_text=f"Service completed: {session.service_type.value}"
         + (f" — {session.service_detail[:50]}" if session.service_detail else ""),
         performed_by=staff.staff_id,
     )
