@@ -741,6 +741,8 @@ Health One 已进入 Temporary Approved Logo v0.1 的第一轮替换准备阶段
 
 Health One Temporary Logo v0.1 的最小可用资产集结构已建立。当前已明确 4 类核心文件与 1 类建议补充文件的命名、目录与用途，但不伪造正式 SVG / PNG / PDF 文件，待真实导出完成后补充入库。
 
+Health One 当前已将已确认的 Temporary Logo v0.1 主文件入库，文件路径为 `docs/brand/logo/assets/primary/Health-One-Primary-Temporary-v0.1.png`。当前策略是先用该 PNG 文件支持第一轮数字品牌资料换标，不伪造其它未完成的 Logo 资产版本。
+
 **2026-06-30**
 
 BRAND-001｜Health One Brand Guideline V1.0 已作为品牌根文档建立 Draft 版本。

@@ -4,6 +4,16 @@
 
 当前目录用于承接 Temporary Logo v0.1 最小可用资产集。
 
+### 当前已入库
+
+| 文件 | 目录 | 说明 |
+|------|------|------|
+| `Health-One-Primary-Temporary-v0.1.png` | `primary/` | 唯一已真实入库的 Temporary Logo 文件 |
+
+### 待补
+
+其它版本（SVG / PDF / Horizontal / White / Black / Icon）待后续真实导出后补充，不得伪造未完成资产。
+
 ---
 
 ## Important Rule
