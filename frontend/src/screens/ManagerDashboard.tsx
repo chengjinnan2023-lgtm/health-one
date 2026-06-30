@@ -160,7 +160,13 @@ export default function ManagerDashboard() {
 
         {/* 待随访 */}
         <section className="bg-white border rounded-lg p-4">
-          <h2 className="text-base font-semibold mb-2">待随访</h2>
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-base font-semibold">待随访</h2>
+            <button onClick={() => navigate("/follow-up-queue")}
+              className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer">
+              查看全部 →
+            </button>
+          </div>
           {followups.length > 0 ? (
             <ul className="text-sm space-y-2">
               {followups.map(f => (

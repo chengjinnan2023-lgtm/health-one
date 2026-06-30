@@ -7,7 +7,7 @@ import csv
 
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
-from sqlalchemy import select, func
+from sqlalchemy import or_, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from health_one.platform.auth import get_current_staff
@@ -239,3 +239,85 @@ async def export_csv(
                     "待随访",
                 ])
         return _csv_response(rows, f"followups-{date_str}.csv")
+
+
+# ─── Follow-Up Queue ────────────────────────────────────────────
+
+FOLLOW_UP_TAGS = ["需随访", "高意向"]
+
+
+@router.get("/follow-up-queue")
+async def follow_up_queue(
+    db: AsyncSession = Depends(get_db),
+    staff: Staff = Depends(get_current_staff),
+):
+    """Return consolidated follow-up queue for store staff.
+
+    Merges two signal sources, deduplicated (followup takes priority):
+    1. Pending follow-up plans (HealthPlan.follow_up_schedule.status == "pending")
+    2. Active customers tagged 需随访 or 高意向 (without existing pending plans)
+    """
+    items: list[dict] = []
+    seen_ids: set[str] = set()
+
+    # ── Source 1: Pending follow-up plans ──────────────────────
+    plan_result = await db.execute(
+        select(HealthPlan, HealthIdentity)
+        .join(HealthIdentity, HealthPlan.identity_id == HealthIdentity.identity_id)
+        .where(HealthIdentity.activation_status != "archived")
+        .order_by(HealthPlan.created_at.desc())
+        .limit(100)
+    )
+
+    for row in plan_result.all():
+        plan, identity = row[0], row[1]
+        fu = plan.follow_up_schedule
+        if not fu or fu.get("status") != "pending":
+            continue
+        iid = str(identity.identity_id)
+        seen_ids.add(iid)
+        items.append({
+            "identity_id": iid,
+            "customer_name": identity.display_name,
+            "source": "followup",
+            "reason": METHOD_LABELS.get(fu.get("method", ""), fu.get("method", "")),
+            "planned_at": fu.get("planned_at", ""),
+            "plan_id": str(plan.plan_id),
+            "tags": identity.tags if identity.tags else [],
+            "activation_status": identity.activation_status.value,
+        })
+
+    # ── Source 2: Tagged customers without pending plans ───────
+    tag_conditions = [
+        HealthIdentity.tags.contains([tag])
+        for tag in FOLLOW_UP_TAGS
+    ]
+    tag_result = await db.execute(
+        select(HealthIdentity)
+        .where(
+            HealthIdentity.activation_status == "active",
+            or_(*tag_conditions),
+        )
+        .order_by(HealthIdentity.created_at.desc())
+        .limit(100)
+    )
+
+    for identity in tag_result.scalars().all():
+        iid = str(identity.identity_id)
+        if iid in seen_ids:
+            continue
+        seen_ids.add(iid)
+        # Determine which tag triggered the match
+        matched_tags = [t for t in identity.tags if t in FOLLOW_UP_TAGS]
+        items.append({
+            "identity_id": iid,
+            "customer_name": identity.display_name,
+            "source": "tag",
+            "reason": matched_tags[0] if matched_tags else "",
+            "planned_at": None,
+            "plan_id": None,
+            "tags": identity.tags if identity.tags else [],
+            "activation_status": identity.activation_status.value,
+        })
+
+    return {"items": items}

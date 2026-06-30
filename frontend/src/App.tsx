@@ -10,6 +10,7 @@ import ConcernIntakeScreen from "./screens/ConcernIntakeScreen";
 import FeedbackRecordScreen from "./screens/FeedbackRecordScreen";
 import FollowUpScreen from "./screens/FollowUpScreen";
 import ServiceRecordScreen from "./screens/ServiceRecordScreen";
+import FollowUpQueueScreen from "./screens/FollowUpQueueScreen";
 import ManagerDashboard from "./screens/ManagerDashboard";
 import HealthAdvisorDashboard from "./screens/HealthAdvisorDashboard";
 
@@ -39,6 +40,7 @@ function AppRoutes() {
         }
       >
         <Route path="/" element={<HomeScreen />} />
+        <Route path="/follow-up-queue" element={<FollowUpQueueScreen />} />
         <Route path="/customers" element={<CustomerSearchScreen />} />
         <Route path="/customers/:id" element={<CustomerSummaryScreen />} />
         <Route
