@@ -18,6 +18,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function CustomerSearchScreen() {
   const { staff } = useAuth();
+  const canCreate = staff?.role !== "服务人员";
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<HealthIdentity[]>([]);
@@ -86,9 +87,11 @@ export default function CustomerSearchScreen() {
           placeholder="输入客户姓名搜索…"
           className="flex-1 border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           data-testid="search-input" />
-        <button onClick={() => setShowCreate(!showCreate)}
-          className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700"
-          data-testid="create-toggle">+ 新建客户</button>
+        {canCreate && (
+          <button onClick={() => setShowCreate(!showCreate)}
+            className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700"
+            data-testid="create-toggle">+ 新建客户</button>
+        )}
       </div>
 
       {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm">{error}</div>}

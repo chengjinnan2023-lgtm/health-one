@@ -6,6 +6,7 @@ import { useAuth } from "../auth/AuthContext";
 export default function BaseLayout() {
   const { staff, logout } = useAuth();
   const navigate = useNavigate();
+  const isManager = staff?.role === "店长";
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
@@ -13,6 +14,7 @@ export default function BaseLayout() {
           <Link to="/" className="text-lg font-bold text-blue-700">Health One</Link>
           <nav className="flex gap-4 text-sm">
             <Link to="/customers" className="text-gray-600 hover:text-blue-600">客户管理</Link>
+            {isManager && <span className="text-gray-300 cursor-not-allowed" title="Sprint-5 上线">店员管理</span>}
           </nav>
         </div>
         <div className="flex items-center gap-4 text-sm">
