@@ -2,8 +2,11 @@
 
 from collections import Counter
 from datetime import date, datetime, timezone
+from io import StringIO
+import csv
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -144,3 +147,95 @@ async def manager_dashboard(
         "pending_followups": pending_followups,
         "top_tags": top_tags,
     }
+
+
+# ─── CSV Export ────────────────────────────────────────────────
+
+METHOD_LABELS = {"phone": "电话", "wechat": "微信", "sms": "短信", "in-store": "到店"}
+
+
+def _csv_response(rows: list[list[str]], filename: str) -> StreamingResponse:
+    """Build a UTF-8 CSV StreamingResponse with BOM."""
+    buf = StringIO()
+    buf.write("﻿")  # BOM for Excel Chinese support
+    writer = csv.writer(buf)
+    for row in rows:
+        writer.writerow(row)
+    buf.seek(0)
+    return StreamingResponse(
+        iter([buf.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+@router.get("/manager/export/csv")
+async def export_csv(
+    type: str = Query(..., pattern="^(customers|sessions|followups)$"),
+    export_date: str | None = Query(None, pattern=r"^\d{4}-\d{2}-\d{2}$"),
+    db: AsyncSession = Depends(get_db),
+    staff: Staff = Depends(get_current_staff),
+):
+    """Export daily data as CSV. 仅店长可见（前端 gate）。"""
+    if export_date:
+        target_date = date.fromisoformat(export_date)
+    else:
+        target_date = date.today()
+
+    day_start = datetime(target_date.year, target_date.month, target_date.day, tzinfo=timezone.utc)
+    day_end = datetime(target_date.year, target_date.month, target_date.day, 23, 59, 59, tzinfo=timezone.utc)
+    date_str = target_date.isoformat()
+
+    if type == "customers":
+        result = await db.execute(
+            select(HealthIdentity)
+            .where(HealthIdentity.created_at >= day_start, HealthIdentity.created_at <= day_end)
+            .order_by(HealthIdentity.created_at.desc())
+        )
+        rows = [["姓名", "状态", "标签", "创建时间"]]
+        for ident in result.scalars().all():
+            rows.append([
+                ident.display_name,
+                ident.activation_status.value,
+                "、".join(ident.tags) if ident.tags else "",
+                ident.created_at.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M"),
+            ])
+        return _csv_response(rows, f"customers-{date_str}.csv")
+
+    elif type == "sessions":
+        result = await db.execute(
+            select(ServiceSession, HealthIdentity.display_name)
+            .join(HealthIdentity, ServiceSession.identity_id == HealthIdentity.identity_id)
+            .where(ServiceSession.created_at >= day_start, ServiceSession.created_at <= day_end)
+            .order_by(ServiceSession.created_at.desc())
+        )
+        rows = [["客户名", "服务类型", "开始时间", "状态"]]
+        for row in result.all():
+            sess, name = row[0], row[1]
+            rows.append([
+                name,
+                sess.service_type.value,
+                sess.started_at.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M") if sess.started_at else "",
+                "已完成" if sess.completed_at else "进行中",
+            ])
+        return _csv_response(rows, f"sessions-{date_str}.csv")
+
+    elif type == "followups":
+        result = await db.execute(
+            select(HealthPlan, HealthIdentity.display_name)
+            .join(HealthIdentity, HealthPlan.identity_id == HealthIdentity.identity_id)
+            .order_by(HealthPlan.created_at.desc())
+            .limit(100)
+        )
+        rows = [["客户名", "随访方式", "计划时间", "状态"]]
+        for row in result.all():
+            plan, name = row[0], row[1]
+            fu = plan.follow_up_schedule
+            if fu and fu.get("status") == "pending":
+                rows.append([
+                    name,
+                    METHOD_LABELS.get(fu.get("method", ""), fu.get("method", "")),
+                    fu.get("planned_at", "")[:10] if fu.get("planned_at") else "",
+                    "待随访",
+                ])
+        return _csv_response(rows, f"followups-{date_str}.csv")

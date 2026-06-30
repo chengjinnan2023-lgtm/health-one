@@ -165,6 +165,26 @@ export default function ManagerDashboard() {
         </section>
       </div>
 
+      {/* ─── 导出日报 ──────────────────────────────────────── */}
+      <div className="bg-white border rounded-lg p-4 mb-6">
+        <h2 className="text-base font-semibold mb-3">📥 导出日报</h2>
+        <div className="flex flex-wrap gap-3">
+          <a href={`${import.meta.env.VITE_API_BASE_URL || ""}/api/dashboard/manager/export/csv?type=customers`}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded text-sm font-medium bg-green-50 text-green-700 border border-green-200 hover:bg-green-100">
+            📄 导出今日客户 CSV
+          </a>
+          <a href={`${import.meta.env.VITE_API_BASE_URL || ""}/api/dashboard/manager/export/csv?type=sessions`}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100">
+            📄 导出今日服务 CSV
+          </a>
+          <a href={`${import.meta.env.VITE_API_BASE_URL || ""}/api/dashboard/manager/export/csv?type=followups`}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded text-sm font-medium bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100">
+            📄 导出待随访 CSV
+          </a>
+        </div>
+        <p className="text-xs text-gray-400 mt-3">CSV 格式，可用 Excel 打开。仅导出当天数据。</p>
+      </div>
+
       {/* ─── 快捷入口 ──────────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-4">
         <button onClick={() => navigate("/customers")}
