@@ -118,7 +118,7 @@ Location: `docs/brand/logo`
 
 Purpose: Logo direction specification, asset structure, usage rules.
 
-Contains: LOGO-008 Final Selected Direction Specification V0.1; LOGO-012 Logo Asset Structure Draft V0.1; LOGO-013 Logo Usage Rules V0.1; LOGO-014 Logo Export Pack Specification V0.1. Logo 资产包目录结构已建立，包含 primary、horizontal、stacked、icon、wordmark、monochrome、preview 七类目录。展示板图片待后续整理后补充入库。
+Contains: LOGO-008 Final Selected Direction Specification V0.1; LOGO-012 Logo Asset Structure Draft V0.1; LOGO-013 Logo Usage Rules V0.1; LOGO-014 Logo Export Pack Specification V0.1; LOGO-016 Temporary Logo Deployment Plan V0.1 (Approved for Initial Use). Logo 资产包目录结构已建立，当前 Logo 已进入临时启用阶段。
 
 Audience: Brand & Design Office.
 
