@@ -1,6 +1,6 @@
 // Health One — S6: 随访 (DEV-038 + PILOT-010).
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
@@ -10,12 +10,29 @@ const FOLLOWUP_METHODS = [
 ];
 const FOLLOWUP_REASONS = ["服务随访", "健康检查", "关注回顾", "常规问候"];
 
+interface StaffOption { staff_id: string; display_name: string; role: string; }
+
 export default function FollowUpScreen() {
   const { id } = useParams<{ id: string }>(); const navigate = useNavigate(); const { staff } = useAuth();
   const canManageFollowUp = staff?.role !== "服务人员";
+  const isManager = staff?.role === "店长";
   const [reason, setReason] = useState(""); const [method, setMethod] = useState("");
   const [plannedAt, setPlannedAt] = useState(""); const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false); const [error, setError] = useState(""); const [planId, setPlanId] = useState<string | null>(null);
+  const [assignedTo, setAssignedTo] = useState(staff?.staff_id || "");
+  const [staffOptions, setStaffOptions] = useState<StaffOption[]>([]);
+
+  useEffect(() => {
+    // Fetch identity to get current assigned_staff_id, and staff list
+    if (!id) return;
+    Promise.all([
+      api.get<{ assigned_staff_id: string | null }>(`/api/identities/${id}`).catch(() => null),
+      isManager ? api.get<StaffOption[]>("/api/staff/").catch(() => []) : Promise.resolve([]),
+    ]).then(([identity, staffList]) => {
+      if (identity?.assigned_staff_id) setAssignedTo(identity.assigned_staff_id);
+      setStaffOptions(staffList as StaffOption[]);
+    });
+  }, [id, isManager]);
 
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
@@ -27,7 +44,7 @@ export default function FollowUpScreen() {
     try {
       const data = await api.post<{ plan_id: string }>(`/api/identities/${id}/plans`, {
         follow_up_schedule: { method, planned_at: new Date(plannedAt).toISOString(),
-          assigned_staff: staff?.staff_id || "", reason: reason || "服务随访", status: "pending" },
+          assigned_staff: assignedTo || staff?.staff_id || "", reason: reason || "服务随访", status: "pending" },
         created_by: staff?.staff_id || "",
       });
       setPlanId(data.plan_id);
@@ -42,7 +59,7 @@ export default function FollowUpScreen() {
       await api.patch(`/api/identities/${id}/plans/${planId}`, {
         plan_status: "completed",
         follow_up_schedule: { method, planned_at: new Date(plannedAt).toISOString(),
-          assigned_staff: staff?.staff_id || "", reason: reason || "服务随访", status: "completed", result: notes || "随访已完成" },
+          assigned_staff: assignedTo || staff?.staff_id || "", reason: reason || "服务随访", status: "completed", result: notes || "随访已完成" },
       });
       navigate(`/customers/${id}`);
     } catch (err) { setError(err instanceof Error ? err.message : "更新失败"); }
@@ -107,8 +124,18 @@ export default function FollowUpScreen() {
             required data-testid="planned-at" />
           {error && !plannedAt && <p className="text-red-500 text-xs mt-1">请选择计划时间</p>}
         </div>
-        <div><label className="block text-sm font-medium text-gray-700 mb-1">负责员工</label>
-          <input type="text" value={staff?.display_name || ""} disabled className="w-full border border-gray-200 rounded px-3 py-2 text-sm bg-gray-50 text-gray-500" /></div>
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">分配给</label>
+          {staffOptions.length > 0 ? (
+            <select value={assignedTo} onChange={e => setAssignedTo(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              {staffOptions.map(s => (
+                <option key={s.staff_id} value={s.staff_id}>{s.display_name}（{s.role}）</option>
+              ))}
+            </select>
+          ) : (
+            <input type="text" value={staff?.display_name || ""} disabled className="w-full border border-gray-200 rounded px-3 py-2 text-sm bg-gray-50 text-gray-500" />
+          )}
+        </div>
         <div><label className="block text-sm font-medium text-gray-700 mb-1">备注</label>
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2}
             className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"

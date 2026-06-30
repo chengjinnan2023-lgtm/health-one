@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api, type HealthIdentity, type HealthProfile, type TimelineEntry } from "../api/client";
+import { useAuth } from "../auth/AuthContext";
 
 const STATUS_LABELS: Record<string, string> = { pending: "待激活", active: "已激活", archived: "已归档" };
 const STATUS_COLORS: Record<string, string> = {
@@ -30,8 +31,18 @@ export default function CustomerSummaryScreen() {
   const [newTag, setNewTag] = useState("");
   const [savingTag, setSavingTag] = useState(false);
   const [archiving, setArchiving] = useState(false);
+  const { staff: me } = useAuth();
+  const isManager = me?.role === "店长";
+  const [staffList, setStaffList] = useState<{ staff_id: string; display_name: string; role: string }[]>([]);
+  const [changingOwner, setChangingOwner] = useState(false);
 
   useEffect(() => { if (!id) return; loadData(); }, [id]);
+
+  useEffect(() => {
+    if (!isManager) return;
+    api.get<{ staff_id: string; display_name: string; role: string }[]>("/api/staff/")
+      .then(setStaffList).catch(() => {});
+  }, [isManager]);
 
   async function loadData() {
     setLoading(true); setError("");
@@ -95,6 +106,18 @@ export default function CustomerSummaryScreen() {
     finally { setArchiving(false); }
   }
 
+  async function handleChangeOwner(newStaffId: string | null) {
+    if (!id || !identity) return;
+    setChangingOwner(true);
+    try {
+      const updated = await api.patch<HealthIdentity>(`/api/identities/${id}`, {
+        assigned_staff_id: newStaffId,
+      });
+      setIdentity(updated);
+    } catch (err) { setError(err instanceof Error ? err.message : "负责人变更失败"); }
+    finally { setChangingOwner(false); }
+  }
+
   async function handleUnarchive() {
     if (!id || !identity) return;
     setArchiving(true);
@@ -131,6 +154,29 @@ export default function CustomerSummaryScreen() {
             <button onClick={() => navigate(`/customers/${id}/service`)} className="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-indigo-700" data-testid="new-service-btn">新建服务</button>
           )}
         </div>
+      </div>
+
+      {/* ─── Owner ────────────────────────────────────────── */}
+      <div className="mb-4 flex items-center gap-3">
+        <span className="text-sm text-gray-500">负责人：</span>
+        {identity.assigned_staff_name ? (
+          <span className="text-sm font-medium text-gray-800">{identity.assigned_staff_name}</span>
+        ) : (
+          <span className="text-sm text-gray-400">未指定</span>
+        )}
+        {isManager && (
+          <select
+            value={identity.assigned_staff_id || ""}
+            onChange={e => handleChangeOwner(e.target.value || null)}
+            disabled={changingOwner}
+            className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-50"
+          >
+            <option value="">未指定</option>
+            {staffList.map(s => (
+              <option key={s.staff_id} value={s.staff_id}>{s.display_name}（{s.role}）</option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* ─── Tags ──────────────────────────────────────────── */}

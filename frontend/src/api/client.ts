@@ -57,6 +57,8 @@ export interface HealthIdentity {
   primary_store_id: string;
   data_ownership_tag: "customer" | "platform";
   tags: string[];
+  assigned_staff_id: string | null;
+  assigned_staff_name: string | null;
   created_at: string;
   activated_at: string | null;
 }

@@ -15,6 +15,7 @@ from health_one.platform.database import get_db
 from health_one.platform.models.identity import HealthIdentity
 from health_one.platform.models.plan import HealthPlan
 from health_one.platform.models.session import ServiceSession
+from health_one.platform.services.staff_lookup import resolve_staff_names
 from health_one.store.models.staff import Staff
 
 router = APIRouter(prefix="/api/dashboard", tags=["Dashboard"])
@@ -250,15 +251,19 @@ FOLLOW_UP_TAGS = ["需随访", "高意向"]
 async def follow_up_queue(
     db: AsyncSession = Depends(get_db),
     staff: Staff = Depends(get_current_staff),
+    staff_id: str | None = Query(None, description="Filter by assigned staff ID"),
 ):
     """Return consolidated follow-up queue for store staff.
 
     Merges two signal sources, deduplicated (followup takes priority):
     1. Pending follow-up plans (HealthPlan.follow_up_schedule.status == "pending")
     2. Active customers tagged 需随访 or 高意向 (without existing pending plans)
+
+    Optional staff_id filters to items assigned to a specific staff member.
     """
     items: list[dict] = []
     seen_ids: set[str] = set()
+    all_staff_ids: set[str] = set()
 
     # ── Source 1: Pending follow-up plans ──────────────────────
     plan_result = await db.execute(
@@ -276,6 +281,12 @@ async def follow_up_queue(
             continue
         iid = str(identity.identity_id)
         seen_ids.add(iid)
+
+        # Resolve assigned staff from follow_up_schedule or identity
+        assigned = fu.get("assigned_staff", "") or str(identity.assigned_staff_id or "")
+        if assigned:
+            all_staff_ids.add(assigned)
+
         items.append({
             "identity_id": iid,
             "customer_name": identity.display_name,
@@ -285,6 +296,7 @@ async def follow_up_queue(
             "plan_id": str(plan.plan_id),
             "tags": identity.tags if identity.tags else [],
             "activation_status": identity.activation_status.value,
+            "assigned_staff_id": assigned or None,
         })
 
     # ── Source 2: Tagged customers without pending plans ───────
@@ -307,8 +319,12 @@ async def follow_up_queue(
         if iid in seen_ids:
             continue
         seen_ids.add(iid)
-        # Determine which tag triggered the match
         matched_tags = [t for t in identity.tags if t in FOLLOW_UP_TAGS]
+
+        assigned = str(identity.assigned_staff_id) if identity.assigned_staff_id else None
+        if assigned:
+            all_staff_ids.add(assigned)
+
         items.append({
             "identity_id": iid,
             "customer_name": identity.display_name,
@@ -318,7 +334,18 @@ async def follow_up_queue(
             "plan_id": None,
             "tags": identity.tags if identity.tags else [],
             "activation_status": identity.activation_status.value,
+            "assigned_staff_id": assigned,
         })
+
+    # ── Resolve staff names ────────────────────────────────────
+    names = await resolve_staff_names(all_staff_ids)
+    for item in items:
+        sid = item.get("assigned_staff_id")
+        item["assigned_staff_name"] = names.get(sid) if sid else None
+
+    # ── Filter by staff_id (post-resolution) ───────────────────
+    if staff_id:
+        items = [i for i in items if i.get("assigned_staff_id") == staff_id]
 
     return {"items": items}
 

@@ -15,6 +15,7 @@ from health_one.platform.schemas.identity import (
     IdentityResponse,
     IdentityUpdate,
 )
+from health_one.platform.services.staff_lookup import resolve_staff_names
 from health_one.platform.services.timeline import append_timeline_entry
 from health_one.store.models.staff import Staff
 
@@ -62,7 +63,13 @@ async def get_identity(identity_id: uuid.UUID, db: AsyncSession = Depends(get_db
     identity = result.scalar_one_or_none()
     if identity is None:
         raise HTTPException(status_code=404, detail="Health Identity not found")
-    return identity
+
+    # Resolve assigned_staff_name for display (FEATURE-007).
+    data = IdentityResponse.model_validate(identity).model_dump()
+    if identity.assigned_staff_id:
+        names = await resolve_staff_names({str(identity.assigned_staff_id)})
+        data["assigned_staff_name"] = names.get(str(identity.assigned_staff_id))
+    return data
 
 
 @router.get("/", response_model=list[IdentityResponse])
@@ -117,6 +124,8 @@ async def update_identity(
         identity.primary_store_id = body.primary_store_id
     if body.tags is not None:
         identity.tags = body.tags
+    if body.assigned_staff_id is not None:
+        identity.assigned_staff_id = uuid.UUID(body.assigned_staff_id) if body.assigned_staff_id else None
 
     await db.commit()
     await db.refresh(identity)

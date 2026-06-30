@@ -12,6 +12,8 @@ interface QueueItem {
   plan_id: string | null;
   tags: string[];
   activation_status: string;
+  assigned_staff_id: string | null;
+  assigned_staff_name: string | null;
 }
 
 interface QueueData {
@@ -78,6 +80,9 @@ export default function FollowUpQueueScreen() {
                   <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-1.5">
                     <span>{SOURCE_LABELS[item.source]}</span>
                     <span>{item.reason}</span>
+                    {item.assigned_staff_name && (
+                      <span className="text-gray-400">· 负责人：{item.assigned_staff_name}</span>
+                    )}
                     {item.planned_at && (
                       <span className="text-gray-300">
                         · 计划 {new Date(item.planned_at).toLocaleDateString("zh-CN")}

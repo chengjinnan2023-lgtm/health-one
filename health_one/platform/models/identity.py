@@ -66,6 +66,10 @@ class HealthIdentity(Base, TimestampMixin):
     activated_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True,
     )
+    assigned_staff_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), nullable=True,
+        comment="Application-level FK → Staff (Store DB). The health advisor responsible for this customer.",
+    )
 
     # Relationships (1:1)
     profile: Mapped["HealthProfile | None"] = relationship(
