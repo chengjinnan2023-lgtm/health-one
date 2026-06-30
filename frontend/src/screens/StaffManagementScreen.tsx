@@ -60,9 +60,11 @@ export default function StaffManagementScreen() {
 
   const toggleStatus = async (s: StaffMember) => {
     const newStatus = s.status === "active" ? "inactive" : "active";
+    const action = newStatus === "active" ? "启用" : "停用";
+    if (!confirm(`确认${action}店员「${s.display_name}」？`)) return;
     try {
       await api.patch(`/api/staff/${s.staff_id}`, { status: newStatus });
-      flash(`${s.display_name} 已${newStatus === "active" ? "启用" : "停用"}`);
+      flash(`${s.display_name} 已${action}`);
       fetchStaff();
     } catch (e: any) { setError(e?.message || "操作失败"); }
   };
@@ -183,7 +185,7 @@ export default function StaffManagementScreen() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">初始密码</label>
-                <input type="text" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })}
+                <input type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })}
                   className="w-full px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" placeholder="至少 6 位" />
               </div>
             </div>
