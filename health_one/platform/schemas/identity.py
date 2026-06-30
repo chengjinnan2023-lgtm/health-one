@@ -19,6 +19,7 @@ class IdentityUpdate(BaseModel):
 
     display_name: str | None = Field(None, min_length=1, max_length=200)
     primary_store_id: uuid.UUID | None = None
+    tags: list[str] | None = None
 
 
 class IdentityResponse(BaseModel):
@@ -31,6 +32,7 @@ class IdentityResponse(BaseModel):
     activation_status: str
     primary_store_id: uuid.UUID
     data_ownership_tag: str
+    tags: list[str] = []
     created_at: datetime
     updated_at: datetime
     activated_at: datetime | None = None

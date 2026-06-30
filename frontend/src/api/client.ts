@@ -56,6 +56,7 @@ export interface HealthIdentity {
   activation_status: "pending" | "active" | "archived";
   primary_store_id: string;
   data_ownership_tag: "customer" | "platform";
+  tags: string[];
   created_at: string;
   activated_at: string | null;
 }

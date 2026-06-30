@@ -1,6 +1,6 @@
-// Health One — S2: 客户健康元总览 (DEV-018 + DEV-039 + PILOT-010).
+// Health One — S2: 客户健康元总览 (DEV-018 + DEV-039 + PILOT-010 + FEATURE-001).
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api, type HealthIdentity, type HealthProfile, type TimelineEntry } from "../api/client";
 
@@ -8,6 +8,12 @@ const STATUS_LABELS: Record<string, string> = { pending: "待激活", active: "�
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800", active: "bg-green-100 text-green-800", archived: "bg-gray-100 text-gray-500",
 };
+
+const SUGGESTED_TAGS = [
+  "肩颈", "腰背", "疲劳", "运动恢复",
+  "老客户", "新客户", "高意向", "价格敏感",
+  "转介绍", "需随访", "周末", "已流失",
+];
 
 interface SessionSummary { session_id: string; service_type: string; started_at: string; completed_at: string | null; customer_feedback: string | null; }
 interface PlanSummary { plan_id: string; plan_status: string; follow_up_schedule: { method?: string; planned_at?: string; status?: string; result?: string; } | null; }
@@ -20,6 +26,10 @@ export default function CustomerSummaryScreen() {
   const [sessions, setSessions] = useState<SessionSummary[]>([]);
   const [plans, setPlans] = useState<PlanSummary[]>([]);
   const [loading, setLoading] = useState(true); const [error, setError] = useState("");
+  const [showTagInput, setShowTagInput] = useState(false);
+  const [newTag, setNewTag] = useState("");
+  const [savingTag, setSavingTag] = useState(false);
+  const [archiving, setArchiving] = useState(false);
 
   useEffect(() => { if (!id) return; loadData(); }, [id]);
 
@@ -44,8 +54,62 @@ export default function CustomerSummaryScreen() {
     catch (err) { setError(err instanceof Error ? err.message : "激活失败"); }
   }
 
+  // ─── Tag operations ─────────────────────────────────────────
+
+  async function handleAddTag(e: FormEvent) {
+    e.preventDefault();
+    if (!id || !newTag.trim() || !identity) return;
+    const tag = newTag.trim();
+    if (identity.tags?.includes(tag)) { setNewTag(""); setShowTagInput(false); return; }
+    setSavingTag(true);
+    try {
+      const updated = await api.patch<HealthIdentity>(`/api/identities/${id}`, {
+        tags: [...(identity.tags || []), tag],
+      });
+      setIdentity(updated); setNewTag(""); setShowTagInput(false);
+    } catch (err) { setError(err instanceof Error ? err.message : "标签保存失败"); }
+    finally { setSavingTag(false); }
+  }
+
+  async function handleRemoveTag(tag: string) {
+    if (!id || !identity) return;
+    setSavingTag(true);
+    try {
+      const updated = await api.patch<HealthIdentity>(`/api/identities/${id}`, {
+        tags: (identity.tags || []).filter(t => t !== tag),
+      });
+      setIdentity(updated);
+    } catch (err) { setError(err instanceof Error ? err.message : "标签删除失败"); }
+    finally { setSavingTag(false); }
+  }
+
+  // ─── Archive / Unarchive ────────────────────────────────────
+
+  async function handleArchive() {
+    if (!id || !identity) return;
+    setArchiving(true);
+    try {
+      const updated = await api.post<HealthIdentity>(`/api/identities/${id}/archive`);
+      setIdentity(updated);
+    } catch (err) { setError(err instanceof Error ? err.message : "归档失败"); }
+    finally { setArchiving(false); }
+  }
+
+  async function handleUnarchive() {
+    if (!id || !identity) return;
+    setArchiving(true);
+    try {
+      const updated = await api.post<HealthIdentity>(`/api/identities/${id}/unarchive`);
+      setIdentity(updated);
+    } catch (err) { setError(err instanceof Error ? err.message : "恢复失败"); }
+    finally { setArchiving(false); }
+  }
+
   if (loading) return <div className="text-center py-12 text-gray-400" data-testid="screen-s2">加载中…</div>;
   if (error || !identity) return <div className="text-center py-12 text-red-500" data-testid="screen-s2">{error || "客户未找到"}</div>;
+
+  const isArchived = identity.activation_status === "archived";
+  const tags = identity.tags || [];
 
   return (
     <div data-testid="screen-s2">
@@ -60,7 +124,7 @@ export default function CustomerSummaryScreen() {
           {identity.activation_status === "pending" && (
             <button onClick={handleActivate} className="bg-green-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-green-700" data-testid="activate-btn">激活健康元</button>
           )}
-          {identity.activation_status !== "archived" && (
+          {!isArchived && (
             <button onClick={() => navigate(`/customers/${id}/concern`)} className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700" data-testid="record-concern-btn">记录健康关注</button>
           )}
           {identity.activation_status === "active" && (
@@ -68,6 +132,50 @@ export default function CustomerSummaryScreen() {
           )}
         </div>
       </div>
+
+      {/* ─── Tags ──────────────────────────────────────────── */}
+      <div className="mb-6 bg-white border rounded-lg p-4">
+        <h3 className="text-sm font-medium text-gray-500 mb-2">标签</h3>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {tags.map(tag => (
+            <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-blue-100 text-blue-700">
+              {tag}
+              <button onClick={() => handleRemoveTag(tag)} disabled={savingTag}
+                className="ml-0.5 text-blue-400 hover:text-blue-600 font-bold leading-none">&times;</button>
+            </span>
+          ))}
+          {tags.length === 0 && !showTagInput && (
+            <span className="text-gray-400 text-xs">暂无标签</span>
+          )}
+          {showTagInput ? (
+            <form onSubmit={handleAddTag} className="inline-flex items-center gap-1">
+              <input type="text" value={newTag} onChange={(e) => setNewTag(e.target.value)}
+                placeholder="输入标签名"
+                className="w-28 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                autoFocus data-testid="tag-input" />
+              <button type="submit" disabled={savingTag || !newTag.trim()}
+                className="text-xs text-blue-600 hover:text-blue-800 font-medium" data-testid="tag-add-btn">添加</button>
+              <button type="button" onClick={() => { setShowTagInput(false); setNewTag(""); }}
+                className="text-xs text-gray-400 hover:text-gray-600">取消</button>
+            </form>
+          ) : (
+            <button onClick={() => setShowTagInput(true)}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs border border-dashed border-gray-300 text-gray-400 hover:text-blue-600 hover:border-blue-400"
+              data-testid="tag-add-toggle">+ 添加标签</button>
+          )}
+        </div>
+        {/* Suggested tags quick-add */}
+        {showTagInput && (
+          <div className="mt-2 flex flex-wrap gap-1">
+            <span className="text-xs text-gray-400">建议：</span>
+            {SUGGESTED_TAGS.filter(t => !tags.includes(t)).slice(0, 8).map(t => (
+              <button key={t} onClick={() => setNewTag(t)}
+                className="px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-500 hover:bg-blue-100 hover:text-blue-600">{t}</button>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-4">
           <section className="bg-white border rounded-lg p-4">
@@ -136,6 +244,26 @@ export default function CustomerSummaryScreen() {
             ) : <p className="text-gray-400 text-sm">暂无动态</p>}
           </section>
         </div>
+      </div>
+
+      {/* ─── Archive / Unarchive — bottom secondary action ──── */}
+      <div className="mt-8 pt-4 border-t border-gray-200 text-center">
+        {isArchived ? (
+          <button onClick={handleUnarchive} disabled={archiving}
+            className="text-gray-500 text-sm hover:text-blue-600 disabled:opacity-50"
+            data-testid="unarchive-btn">
+            {archiving ? "恢复中…" : "恢复客户"}
+          </button>
+        ) : (
+          <button onClick={handleArchive} disabled={archiving}
+            className="text-gray-400 text-sm hover:text-red-500 disabled:opacity-50"
+            data-testid="archive-btn">
+            {archiving ? "归档中…" : "归档客户"}
+          </button>
+        )}
+        <p className="text-xs text-gray-300 mt-1">
+          {isArchived ? "将客户恢复为活跃状态" : "归档后客户不出现在默认列表中，可随时恢复"}
+        </p>
       </div>
     </div>
   );

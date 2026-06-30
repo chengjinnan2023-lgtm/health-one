@@ -70,6 +70,8 @@ async def search_identities(
     q: str | None = Query(None, description="Search by name (case-insensitive partial match)"),
     store_id: uuid.UUID | None = Query(None, description="Filter by store"),
     status: str | None = Query(None, pattern="^(pending|active|archived)$"),
+    tag: str | None = Query(None, description="Filter by tag (exact match on JSONB array)"),
+    include_archived: bool = Query(False, description="Include archived identities in results"),
     offset: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
@@ -84,6 +86,10 @@ async def search_identities(
         stmt = stmt.where(HealthIdentity.primary_store_id == store_id)
     if status:
         stmt = stmt.where(HealthIdentity.activation_status == status)
+    elif not include_archived:
+        stmt = stmt.where(HealthIdentity.activation_status != "archived")
+    if tag:
+        stmt = stmt.where(HealthIdentity.tags.contains([tag]))
 
     stmt = stmt.order_by(HealthIdentity.created_at.desc()).offset(offset).limit(limit)
     result = await db.execute(stmt)
@@ -109,6 +115,8 @@ async def update_identity(
         identity.display_name = body.display_name
     if body.primary_store_id is not None:
         identity.primary_store_id = body.primary_store_id
+    if body.tags is not None:
+        identity.tags = body.tags
 
     await db.commit()
     await db.refresh(identity)
@@ -164,6 +172,51 @@ async def archive_identity(identity_id: uuid.UUID, db: AsyncSession = Depends(ge
         raise HTTPException(status_code=409, detail="Identity is already archived")
 
     identity.activation_status = "archived"
+
+    # Auto-append Timeline entry
+    await append_timeline_entry(
+        db,
+        identity_id=identity.identity_id,
+        event_type="identity_archived",
+        source_object_type="HealthIdentity",
+        source_object_id=identity.identity_id,
+        summary_text=f"健康元 archived: {identity.display_name}",
+        performed_by=staff.staff_id,
+    )
+
+    await db.commit()
+    await db.refresh(identity)
+    return identity
+
+
+@router.post("/{identity_id}/unarchive", response_model=IdentityResponse)
+async def unarchive_identity(identity_id: uuid.UUID, db: AsyncSession = Depends(get_db), staff: Staff = Depends(get_current_staff)):
+    """Unarchive a Health Identity (archived → active)."""
+    result = await db.execute(
+        select(HealthIdentity).where(HealthIdentity.identity_id == identity_id)
+    )
+    identity = result.scalar_one_or_none()
+    if identity is None:
+        raise HTTPException(status_code=404, detail="Health Identity not found")
+
+    if identity.activation_status.value != "archived":
+        raise HTTPException(
+            status_code=409,
+            detail=f"Cannot unarchive: current status is '{identity.activation_status.value}'",
+        )
+
+    identity.activation_status = "active"
+
+    # Auto-append Timeline entry
+    await append_timeline_entry(
+        db,
+        identity_id=identity.identity_id,
+        event_type="identity_unarchived",
+        source_object_type="HealthIdentity",
+        source_object_id=identity.identity_id,
+        summary_text=f"健康元 unarchived: {identity.display_name}",
+        performed_by=staff.staff_id,
+    )
 
     await db.commit()
     await db.refresh(identity)

@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, Enum, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from health_one.platform.database import Base, TimestampMixin
@@ -58,6 +58,10 @@ class HealthIdentity(Base, TimestampMixin):
         ),
         default=DataOwnershipTag.CUSTOMER,
         nullable=False,
+    )
+    tags: Mapped[list] = mapped_column(
+        JSONB, nullable=False, default=list,
+        comment="Customer tags for store-level categorization (free-text)",
     )
     activated_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True,
