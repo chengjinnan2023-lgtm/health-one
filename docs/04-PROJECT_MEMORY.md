@@ -737,6 +737,8 @@ Health One Logo 资产包目录结构已建立，包含 primary、horizontal、s
 
 Health One 当前已选 Logo 主方向已进入 Temporary Approved Logo v0.1 阶段，可先用于 PITCH-001、PARTNER-001、PARTNER-002、官网与文档系统等数字品牌资料。当前策略是先统一使用，再逐步精修升级。
 
+Health One 已进入 Temporary Approved Logo v0.1 的第一轮替换准备阶段，当前优先纳入替换范围为 PITCH-001 V1.2、PARTNER-001 V0.3、PARTNER-002 V0.2。当前策略是不直接伪造 Logo 文件，而是先形成执行清单，再逐步替换数字品牌资料。
+
 **2026-06-30**
 
 BRAND-001｜Health One Brand Guideline V1.0 已作为品牌根文档建立 Draft 版本。
