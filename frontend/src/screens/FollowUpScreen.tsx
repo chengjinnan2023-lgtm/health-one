@@ -78,7 +78,9 @@ export default function FollowUpScreen() {
       {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm">{error}</div>}
       {!canManageFollowUp ? (
         <div className="bg-white border rounded-lg p-6 text-center">
-          <p className="text-gray-500 text-sm mb-4">随访由店长或健康管理师创建</p>
+          <div className="text-4xl mb-3">📋</div>
+          <p className="text-gray-700 font-medium mb-2">随访由店长或健康管理师创建</p>
+          <p className="text-gray-400 text-sm mb-4">服务完成后，请提醒店长或健康管理师为这位客户创建随访计划</p>
           <button onClick={() => navigate(`/customers/${id}`)} className="text-blue-600 text-sm hover:underline">返回客户总览</button>
         </div>
       ) : (

@@ -45,7 +45,7 @@ export default function HealthAdvisorDashboard() {
 
   return (
     <div data-testid="advisor-dashboard">
-      <h1 className="text-2xl font-bold mb-2">健康管理师工作台</h1>
+      <h1 className="text-2xl font-bold mb-2">{staff?.role || "健康管理师"}工作台</h1>
       <p className="text-sm text-gray-500 mb-6">{staff?.display_name}，今天有 {followUps.length} 个待随访客户</p>
 
       {/* 待随访 */}

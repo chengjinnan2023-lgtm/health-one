@@ -15,9 +15,18 @@ from health_one.store.database import _get_session_factory
 from health_one.store.models.staff import Staff, StaffRole, StaffStatus
 
 
+ROLE_MAP = {
+    "店长": StaffRole.MANAGER,
+    "健康管理师": StaffRole.HEALTH_ADVISOR,
+    "服务人员": StaffRole.SERVICE_STAFF,
+}
+
+
 async def create_demo_staff():
     username = os.getenv("PILOT_STAFF_USERNAME", "staff01")
     password = os.getenv("PILOT_STAFF_PASSWORD", "pilot123")
+    role_value = os.getenv("PILOT_STAFF_ROLE", "健康管理师")
+    staff_role = ROLE_MAP.get(role_value, StaffRole.HEALTH_ADVISOR)
 
     async with _get_session_factory()() as session:
         from sqlalchemy import select
@@ -51,7 +60,7 @@ async def create_demo_staff():
             display_name="健康管理师",
             username=username,
             password_hash=Staff.hash_password(password),
-            role=StaffRole.HEALTH_ADVISOR,
+            role=staff_role,
             status=StaffStatus.ACTIVE,
         )
         session.add(staff)
