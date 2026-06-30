@@ -112,6 +112,18 @@ Audience: Founder, Brand & Design Office, alliance stores.
 
 ---
 
+# Logo
+
+Location: `docs/brand/logo`
+
+Purpose: Logo direction specification, asset structure, usage rules.
+
+Contains: LOGO-008 Final Selected Direction Specification V0.1; LOGO-012 Logo Asset Structure Draft V0.1; LOGO-013 Logo Usage Rules V0.1. Logo 已建立基础规范文档，展示板图片待后续整理后补充入库。
+
+Audience: Brand & Design Office.
+
+---
+
 # Business
 
 Location: `docs/04_Business`

@@ -731,6 +731,10 @@ Markdown 知识库：`docs/business/partner/PARTNER-002-Store-Alliance-FAQ-V0.2.
 
 **2026-06-30**
 
+Health One Logo 主方向已收敛到第二张已选版本，并已建立 3 份品牌基础文档：LOGO-008（最终选定方向说明）、LOGO-012（Logo 资产结构草案）、LOGO-013（Logo 使用规范）。当前先不入库过程展示板图片，待正式整理后补充。
+
+**2026-06-30**
+
 BRAND-001｜Health One Brand Guideline V1.0 已作为品牌根文档建立 Draft 版本。
 
 当前已确认 6 个章节：品牌定位、品牌架构、品牌语气、视觉方向、品牌色系统、字体规范。
