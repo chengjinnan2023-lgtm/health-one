@@ -7,17 +7,19 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from health_one.platform.auth import get_current_staff
 from health_one.platform.database import get_db
 from health_one.platform.models.identity import HealthIdentity
 from health_one.platform.models.profile import HealthProfile
 from health_one.platform.schemas.profile import ProfileResponse, ProfileUpdate
 from health_one.platform.services.timeline import append_timeline_entry
+from health_one.store.models.staff import Staff
 
 router = APIRouter(prefix="/api/identities", tags=["Profile"])
 
 
 @router.get("/{identity_id}/profile", response_model=ProfileResponse)
-async def get_profile(identity_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+async def get_profile(identity_id: uuid.UUID, db: AsyncSession = Depends(get_db), staff: Staff = Depends(get_current_staff)):
     """Get the Health Profile for a given identity."""
     result = await db.execute(
         select(HealthProfile).where(HealthProfile.identity_id == identity_id)
@@ -33,6 +35,7 @@ async def upsert_profile(
     identity_id: uuid.UUID,
     body: ProfileUpdate,
     db: AsyncSession = Depends(get_db),
+    staff: Staff = Depends(get_current_staff),
 ):
     """Create or update the Health Profile for a given identity.
 
@@ -90,7 +93,7 @@ async def upsert_profile(
             f"Health Profile {'created' if is_new else 'updated'}"
             + (f" — primary concern: {body.primary_concern}" if body.primary_concern else "")
         ),
-        performed_by="system",
+        performed_by=staff.staff_id,
     )
 
     await db.commit()
@@ -103,6 +106,7 @@ async def partial_update_profile(
     identity_id: uuid.UUID,
     body: ProfileUpdate,
     db: AsyncSession = Depends(get_db),
+    staff: Staff = Depends(get_current_staff),
 ):
     """Partially update a Health Profile. Only provided fields are changed.
 

@@ -23,6 +23,7 @@ export default function ConcernIntakeScreen() {
   const [staffNotes, setStaffNotes] = useState("");
   const [healthGoal, setHealthGoal] = useState("");
   const [birthYear, setBirthYear] = useState("");
+  const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -36,11 +37,14 @@ export default function ConcernIntakeScreen() {
       const basicInfo: Record<string, string> = {};
       if (birthYear) basicInfo.birth_year = birthYear;
       if (gender) basicInfo.gender = gender;
+      if (phone) basicInfo.phone = phone;
 
       const body: Record<string, unknown> = {};
       if (Object.keys(basicInfo).length > 0) body.basic_info = basicInfo;
-      // Combine category + self-description into primary_concern
-      const concernText = [category, selfDescription].filter(Boolean).join(" — ");
+      // Combine category + self-description + health goal into primary_concern
+      const parts = [category, selfDescription];
+      if (healthGoal) parts.push(`Goal: ${healthGoal}`);
+      const concernText = parts.filter(Boolean).join(" — ");
       if (concernText) body.primary_concern = concernText;
       if (staffNotes) body.lifestyle_notes = staffNotes;
 
@@ -124,6 +128,19 @@ export default function ConcernIntakeScreen() {
 
         {/* Step 3: Health Goal + Basic Info */}
         <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Phone
+            </label>
+            <input
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Customer phone number"
+              data-testid="phone"
+            />
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Health Goal

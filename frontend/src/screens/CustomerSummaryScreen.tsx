@@ -108,7 +108,7 @@ export default function CustomerSummaryScreen() {
               Activate 健康元
             </button>
           )}
-          {identity.activation_status === "active" && (
+          {identity.activation_status !== "archived" && (
             <button
               onClick={() => navigate(`/customers/${id}/concern`)}
               className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700"

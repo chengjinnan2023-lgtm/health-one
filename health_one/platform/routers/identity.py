@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from health_one.platform.auth import get_current_staff
 from health_one.platform.database import get_db
 from health_one.platform.models.identity import HealthIdentity
 from health_one.platform.schemas.identity import (
@@ -15,12 +16,13 @@ from health_one.platform.schemas.identity import (
     IdentityUpdate,
 )
 from health_one.platform.services.timeline import append_timeline_entry
+from health_one.store.models.staff import Staff
 
 router = APIRouter(prefix="/api/identities", tags=["Identity"])
 
 
 @router.post("/", response_model=IdentityResponse, status_code=201)
-async def create_identity(body: IdentityCreate, db: AsyncSession = Depends(get_db)):
+async def create_identity(body: IdentityCreate, db: AsyncSession = Depends(get_db), staff: Staff = Depends(get_current_staff)):
     """Create a new Health Identity (健康元) and auto-append Timeline entry."""
     now = datetime.now(timezone.utc)
 
@@ -43,7 +45,7 @@ async def create_identity(body: IdentityCreate, db: AsyncSession = Depends(get_d
         source_object_type="HealthIdentity",
         source_object_id=identity.identity_id,
         summary_text=f"健康元 created: {identity.display_name}",
-        performed_by="system",
+        performed_by=staff.staff_id,
     )
 
     await db.commit()
@@ -52,7 +54,7 @@ async def create_identity(body: IdentityCreate, db: AsyncSession = Depends(get_d
 
 
 @router.get("/{identity_id}", response_model=IdentityResponse)
-async def get_identity(identity_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+async def get_identity(identity_id: uuid.UUID, db: AsyncSession = Depends(get_db), staff: Staff = Depends(get_current_staff)):
     """Get a Health Identity by ID."""
     result = await db.execute(
         select(HealthIdentity).where(HealthIdentity.identity_id == identity_id)
@@ -71,6 +73,7 @@ async def search_identities(
     offset: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
+    staff: Staff = Depends(get_current_staff),
 ):
     """Search or list Health Identities."""
     stmt = select(HealthIdentity)
@@ -92,6 +95,7 @@ async def update_identity(
     identity_id: uuid.UUID,
     body: IdentityUpdate,
     db: AsyncSession = Depends(get_db),
+    staff: Staff = Depends(get_current_staff),
 ):
     """Update a Health Identity's mutable fields."""
     result = await db.execute(
@@ -112,7 +116,7 @@ async def update_identity(
 
 
 @router.post("/{identity_id}/activate", response_model=IdentityResponse)
-async def activate_identity(identity_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+async def activate_identity(identity_id: uuid.UUID, db: AsyncSession = Depends(get_db), staff: Staff = Depends(get_current_staff)):
     """Activate a Health Identity (pending → active)."""
     result = await db.execute(
         select(HealthIdentity).where(HealthIdentity.identity_id == identity_id)
@@ -138,7 +142,7 @@ async def activate_identity(identity_id: uuid.UUID, db: AsyncSession = Depends(g
         source_object_type="HealthIdentity",
         source_object_id=identity.identity_id,
         summary_text=f"健康元 activated: {identity.display_name}",
-        performed_by="system",
+        performed_by=staff.staff_id,
     )
 
     await db.commit()
@@ -147,7 +151,7 @@ async def activate_identity(identity_id: uuid.UUID, db: AsyncSession = Depends(g
 
 
 @router.post("/{identity_id}/archive", response_model=IdentityResponse)
-async def archive_identity(identity_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+async def archive_identity(identity_id: uuid.UUID, db: AsyncSession = Depends(get_db), staff: Staff = Depends(get_current_staff)):
     """Archive a Health Identity (active → archived)."""
     result = await db.execute(
         select(HealthIdentity).where(HealthIdentity.identity_id == identity_id)

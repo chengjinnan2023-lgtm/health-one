@@ -8,6 +8,7 @@ import uuid
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from health_one.platform.auth import get_current_staff
 from health_one.platform.database import get_db
 from health_one.platform.schemas.timeline import (
     TimelineEntryCreate,
@@ -15,6 +16,7 @@ from health_one.platform.schemas.timeline import (
     TimelineResponse,
 )
 from health_one.platform.services.timeline import append_timeline_entry, get_timeline
+from health_one.store.models.staff import Staff
 
 router = APIRouter(prefix="/api/identities", tags=["Timeline"])
 
@@ -26,6 +28,7 @@ async def read_timeline(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
+    staff: Staff = Depends(get_current_staff),
 ):
     """Read timeline entries for a Health Identity.
 
@@ -56,6 +59,7 @@ async def append_entry(
     identity_id: uuid.UUID,
     body: TimelineEntryCreate,
     db: AsyncSession = Depends(get_db),
+    staff: Staff = Depends(get_current_staff),
 ):
     """Append a Timeline entry for a Health Identity.
 

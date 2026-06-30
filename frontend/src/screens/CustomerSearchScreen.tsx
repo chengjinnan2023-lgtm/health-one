@@ -1,6 +1,6 @@
 // Health One — S1: Customer Search / Create (DEV-017).
 
-import { useState, useCallback, type FormEvent } from "react";
+import { useState, useCallback, useEffect, useRef, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, type HealthIdentity } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
@@ -22,6 +22,8 @@ export default function CustomerSearchScreen() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
 
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const doSearch = useCallback(
     async (q: string) => {
       if (!q.trim()) {
@@ -29,6 +31,7 @@ export default function CustomerSearchScreen() {
         return;
       }
       setSearching(true);
+      setError("");
       try {
         const data = await api.get<HealthIdentity[]>(
           `/api/identities/?q=${encodeURIComponent(q)}&limit=20`,
@@ -42,6 +45,15 @@ export default function CustomerSearchScreen() {
     },
     [],
   );
+
+  // Debounced search — 300ms delay per SPRINT-003-PLAN DEV-031
+  useEffect(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => doSearch(query), 300);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [query, doSearch]);
 
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
@@ -70,10 +82,7 @@ export default function CustomerSearchScreen() {
         <input
           type="text"
           value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            doSearch(e.target.value);
-          }}
+          onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by name..."
           className="flex-1 border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           data-testid="search-input"
