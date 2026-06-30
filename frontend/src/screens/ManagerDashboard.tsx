@@ -61,6 +61,23 @@ export default function ManagerDashboard() {
   const followups = data?.pending_followups || [];
   const tags = data?.top_tags || [];
 
+  async function downloadCSV(type: string) {
+    const base = import.meta.env.VITE_API_BASE_URL || "";
+    const token = localStorage.getItem("access_token");
+    const res = await fetch(`${base}/api/dashboard/manager/export/csv?type=${type}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!res.ok) throw new Error(`导出失败 (${res.status})`);
+    const blob = await res.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+
   return (
     <div data-testid="manager-dashboard">
       <h1 className="text-2xl font-bold mb-2">店长工作台</h1>
@@ -169,18 +186,18 @@ export default function ManagerDashboard() {
       <div className="bg-white border rounded-lg p-4 mb-6">
         <h2 className="text-base font-semibold mb-3">📥 导出日报</h2>
         <div className="flex flex-wrap gap-3">
-          <a href={`${import.meta.env.VITE_API_BASE_URL || ""}/api/dashboard/manager/export/csv?type=customers`}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded text-sm font-medium bg-green-50 text-green-700 border border-green-200 hover:bg-green-100">
+          <button onClick={() => downloadCSV("customers")}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded text-sm font-medium bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 cursor-pointer">
             📄 导出今日客户 CSV
-          </a>
-          <a href={`${import.meta.env.VITE_API_BASE_URL || ""}/api/dashboard/manager/export/csv?type=sessions`}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100">
+          </button>
+          <button onClick={() => downloadCSV("sessions")}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 cursor-pointer">
             📄 导出今日服务 CSV
-          </a>
-          <a href={`${import.meta.env.VITE_API_BASE_URL || ""}/api/dashboard/manager/export/csv?type=followups`}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded text-sm font-medium bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100">
+          </button>
+          <button onClick={() => downloadCSV("followups")}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded text-sm font-medium bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100 cursor-pointer">
             📄 导出待随访 CSV
-          </a>
+          </button>
         </div>
         <p className="text-xs text-gray-400 mt-3">CSV 格式，可用 Excel 打开。仅导出当天数据。</p>
       </div>
