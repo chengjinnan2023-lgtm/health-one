@@ -215,10 +215,10 @@ export default function ManagerDashboard() {
           <p className="font-semibold">客户管理</p>
           <p className="text-sm text-blue-100 mt-1">搜索、新建、查看客户</p>
         </button>
-        <button disabled
-          className="bg-gray-300 text-gray-500 p-4 rounded-lg text-left cursor-not-allowed">
+        <button onClick={() => navigate("/manager/stats")}
+          className="bg-green-600 text-white p-4 rounded-lg text-left hover:bg-green-700 cursor-pointer">
           <p className="font-semibold">运营统计</p>
-          <p className="text-sm mt-1">Sprint-4 上线</p>
+          <p className="text-sm text-green-100 mt-1">本周 / 本月门店数据</p>
         </button>
       </div>
     </div>

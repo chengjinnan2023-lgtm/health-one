@@ -1,7 +1,7 @@
 """Manager Dashboard API — aggregated store-level overview (FEATURE-002)."""
 
 from collections import Counter
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from io import StringIO
 import csv
 
@@ -321,3 +321,111 @@ async def follow_up_queue(
         })
 
     return {"items": items}
+
+
+# ─── Manager Stats ──────────────────────────────────────────────
+
+
+@router.get("/manager/stats")
+async def manager_stats(
+    period: str = Query(..., pattern="^(week|month)$"),
+    db: AsyncSession = Depends(get_db),
+    staff: Staff = Depends(get_current_staff),
+):
+    """Return weekly or monthly store stats for the Manager Stats page.
+
+    period=week → current week (Monday–Sunday)
+    period=month → current month (1st–last day)
+    """
+    today = date.today()
+
+    # ── Period boundaries ──────────────────────────────────────
+    if period == "week":
+        week_start = today - timedelta(days=today.weekday())
+        week_end = week_start + timedelta(days=6)
+        start_dt = datetime(week_start.year, week_start.month, week_start.day, tzinfo=timezone.utc)
+        end_dt = datetime(week_end.year, week_end.month, week_end.day, 23, 59, 59, tzinfo=timezone.utc)
+        period_label = f"{week_start.isoformat()} ~ {week_end.isoformat()}"
+    else:
+        month_start = today.replace(day=1)
+        if today.month == 12:
+            month_end = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
+        else:
+            month_end = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
+        start_dt = datetime(month_start.year, month_start.month, 1, tzinfo=timezone.utc)
+        end_dt = datetime(month_end.year, month_end.month, month_end.day, 23, 59, 59, tzinfo=timezone.utc)
+        period_label = f"{month_start.isoformat()} ~ {month_end.isoformat()}"
+
+    # ── New customers in period ────────────────────────────────
+    new_result = await db.execute(
+        select(func.count(HealthIdentity.identity_id)).where(
+            HealthIdentity.created_at >= start_dt,
+            HealthIdentity.created_at <= end_dt,
+        )
+    )
+    new_customers = new_result.scalar() or 0
+
+    # ── Service sessions in period ─────────────────────────────
+    sessions_result = await db.execute(
+        select(func.count(ServiceSession.session_id)).where(
+            ServiceSession.created_at >= start_dt,
+            ServiceSession.created_at <= end_dt,
+        )
+    )
+    service_sessions = sessions_result.scalar() or 0
+
+    # ── Completed follow-ups in period ─────────────────────────
+    # Note: uses plan.updated_at as proxy for completion time
+    completed_result = await db.execute(
+        select(func.count(HealthPlan.plan_id)).where(
+            HealthPlan.follow_up_schedule["status"].astext == "completed",
+            HealthPlan.updated_at >= start_dt,
+            HealthPlan.updated_at <= end_dt,
+        )
+    )
+    completed_followups = completed_result.scalar() or 0
+
+    # ── Customer structure (reuse /manager logic) ──────────────
+    total_result = await db.execute(select(func.count(HealthIdentity.identity_id)))
+    total = total_result.scalar() or 0
+
+    active_result = await db.execute(
+        select(func.count(HealthIdentity.identity_id)).where(HealthIdentity.activation_status == "active")
+    )
+    active = active_result.scalar() or 0
+
+    pending_result = await db.execute(
+        select(func.count(HealthIdentity.identity_id)).where(HealthIdentity.activation_status == "pending")
+    )
+    pending = pending_result.scalar() or 0
+
+    archived_result = await db.execute(
+        select(func.count(HealthIdentity.identity_id)).where(HealthIdentity.activation_status == "archived")
+    )
+    archived = archived_result.scalar() or 0
+
+    # ── Top tags (reuse /manager logic) ────────────────────────
+    all_tags_result = await db.execute(
+        select(HealthIdentity.tags).where(HealthIdentity.activation_status != "archived")
+    )
+    tag_counter: Counter = Counter()
+    for (tags,) in all_tags_result.all():
+        if tags:
+            for t in tags:
+                tag_counter[t] += 1
+    top_tags = [{"tag": tag, "count": count} for tag, count in tag_counter.most_common(5)]
+
+    return {
+        "period": period,
+        "period_label": period_label,
+        "new_customers": new_customers,
+        "service_sessions": service_sessions,
+        "completed_followups": completed_followups,
+        "customer_structure": {
+            "total": total,
+            "active": active,
+            "pending": pending,
+            "archived": archived,
+        },
+        "top_tags": top_tags,
+    }
