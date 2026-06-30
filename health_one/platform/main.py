@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException
 
 from health_one.platform.config import get_platform_settings
 from health_one.platform.database import check_db_connection
-from health_one.platform.routers import auth, identity, profile, timeline
+from health_one.platform.routers import auth, identity, profile, session, timeline
 
 
 @asynccontextmanager
@@ -29,6 +29,7 @@ app = FastAPI(
 app.include_router(auth.router)
 app.include_router(identity.router)
 app.include_router(profile.router)
+app.include_router(session.router)
 app.include_router(timeline.router)
 
 

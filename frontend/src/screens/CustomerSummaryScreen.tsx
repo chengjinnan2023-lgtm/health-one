@@ -117,6 +117,15 @@ export default function CustomerSummaryScreen() {
               Record Concern
             </button>
           )}
+          {identity.activation_status === "active" && (
+            <button
+              onClick={() => navigate(`/customers/${id}/service`)}
+              className="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-indigo-700"
+              data-testid="new-service-btn"
+            >
+              New Service
+            </button>
+          )}
         </div>
       </div>
 

@@ -7,6 +7,7 @@ import LoginScreen from "./screens/LoginScreen";
 import CustomerSearchScreen from "./screens/CustomerSearchScreen";
 import CustomerSummaryScreen from "./screens/CustomerSummaryScreen";
 import ConcernIntakeScreen from "./screens/ConcernIntakeScreen";
+import ServiceRecordScreen from "./screens/ServiceRecordScreen";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -33,6 +34,10 @@ function AppRoutes() {
         <Route
           path="/customers/:id/concern"
           element={<ConcernIntakeScreen />}
+        />
+        <Route
+          path="/customers/:id/service"
+          element={<ServiceRecordScreen />}
         />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
