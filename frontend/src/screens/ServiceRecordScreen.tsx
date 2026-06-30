@@ -20,13 +20,9 @@ export default function ServiceRecordScreen() {
   const [serviceType, setServiceType] = useState("");
   const [preNotes, setPreNotes] = useState("");
   const [serviceDetail, setServiceDetail] = useState("");
-  const [postNotes, setPostNotes] = useState("");
   const [nextStep, setNextStep] = useState("");
   const [saving, setSaving] = useState(false);
-  const [completing, setCompleting] = useState(false);
-  const [sessionId, setSessionId] = useState<string | null>(null);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
@@ -44,29 +40,11 @@ export default function ServiceRecordScreen() {
           next_step_suggestion: nextStep || null,
         },
       );
-      setSessionId(data.session_id);
-      setSuccess("Service session created.");
+      // Navigate to S5 Feedback with session_id
+      navigate(`/customers/${id}/feedback?session_id=${data.session_id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
-    } finally {
       setSaving(false);
-    }
-  };
-
-  const handleComplete = async () => {
-    if (!id || !sessionId) return;
-    setCompleting(true);
-    setError("");
-    try {
-      await api.patch(`/api/identities/${id}/sessions/${sessionId}`, {
-        post_service_notes: postNotes || null,
-        completed_at: new Date().toISOString(),
-      });
-      setSuccess("Service completed + Timeline updated.");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Complete failed");
-    } finally {
-      setCompleting(false);
     }
   };
 
@@ -80,12 +58,8 @@ export default function ServiceRecordScreen() {
       {error && (
         <div className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm">{error}</div>
       )}
-      {success && (
-        <div className="bg-green-50 text-green-700 p-3 rounded mb-4 text-sm">{success}</div>
-      )}
 
-      {!sessionId ? (
-        <form onSubmit={handleCreate} className="bg-white border rounded-lg p-6 space-y-4">
+      <form onSubmit={handleCreate} className="bg-white border rounded-lg p-6 space-y-4">
           {/* Service Type */}
           <fieldset>
             <legend className="text-sm font-medium text-gray-700 mb-2">
@@ -190,44 +164,6 @@ export default function ServiceRecordScreen() {
             Required: service type + detail ≤ 5 fields
           </p>
         </form>
-      ) : (
-        /* Session created — show complete / feedback options */
-        <div className="bg-white border rounded-lg p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-green-700">✓ Session Recorded</h2>
-
-          {/* Post-service Notes */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Post-Service Observation
-            </label>
-            <textarea
-              value={postNotes}
-              onChange={(e) => setPostNotes(e.target.value)}
-              rows={2}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Observations after service"
-              data-testid="post-notes"
-            />
-          </div>
-
-          <div className="flex gap-2 pt-2">
-            <button
-              onClick={handleComplete}
-              disabled={completing}
-              className="bg-green-600 text-white px-6 py-2 rounded text-sm font-medium hover:bg-green-700 disabled:opacity-50"
-              data-testid="complete-btn"
-            >
-              {completing ? "Completing..." : "Complete Service"}
-            </button>
-            <button
-              onClick={() => navigate(`/customers/${id}`)}
-              className="text-gray-500 px-4 py-2 text-sm"
-            >
-              Back to Summary
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

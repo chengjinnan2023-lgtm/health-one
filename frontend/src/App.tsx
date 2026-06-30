@@ -7,6 +7,7 @@ import LoginScreen from "./screens/LoginScreen";
 import CustomerSearchScreen from "./screens/CustomerSearchScreen";
 import CustomerSummaryScreen from "./screens/CustomerSummaryScreen";
 import ConcernIntakeScreen from "./screens/ConcernIntakeScreen";
+import FeedbackRecordScreen from "./screens/FeedbackRecordScreen";
 import ServiceRecordScreen from "./screens/ServiceRecordScreen";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -38,6 +39,10 @@ function AppRoutes() {
         <Route
           path="/customers/:id/service"
           element={<ServiceRecordScreen />}
+        />
+        <Route
+          path="/customers/:id/feedback"
+          element={<FeedbackRecordScreen />}
         />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
