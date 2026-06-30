@@ -22,13 +22,13 @@ def upgrade() -> None:
     # ─── Enum types ────────────────────────────────────────────
     activation_status_enum = postgresql.ENUM(
         "pending", "active", "archived", name="activation_status_enum",
-        create_type=True,
+        create_type=False,
     )
     activation_status_enum.create(op.get_bind(), checkfirst=True)
 
     data_ownership_tag_enum = postgresql.ENUM(
         "customer", "platform", name="data_ownership_tag_enum",
-        create_type=True,
+        create_type=False,
     )
     data_ownership_tag_enum.create(op.get_bind(), checkfirst=True)
 

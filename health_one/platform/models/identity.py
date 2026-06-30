@@ -38,7 +38,11 @@ class HealthIdentity(Base, TimestampMixin):
     )
     display_name: Mapped[str] = mapped_column(String(200), nullable=False)
     activation_status: Mapped[ActivationStatus] = mapped_column(
-        Enum(ActivationStatus, name="activation_status_enum"),
+        Enum(
+            ActivationStatus,
+            name="activation_status_enum",
+            values_callable=lambda obj: [e.value for e in obj],
+        ),
         default=ActivationStatus.PENDING,
         nullable=False,
     )
@@ -47,7 +51,11 @@ class HealthIdentity(Base, TimestampMixin):
         comment="Application-level FK → Store (Store DB). No DB-level FK constraint.",
     )
     data_ownership_tag: Mapped[DataOwnershipTag] = mapped_column(
-        Enum(DataOwnershipTag, name="data_ownership_tag_enum"),
+        Enum(
+            DataOwnershipTag,
+            name="data_ownership_tag_enum",
+            values_callable=lambda obj: [e.value for e in obj],
+        ),
         default=DataOwnershipTag.CUSTOMER,
         nullable=False,
     )

@@ -23,7 +23,7 @@ class PlatformSettings:
 
     # App
     APP_NAME: str = "Health One Platform API"
-    APP_VERSION: str = "0.1.0"
+    APP_VERSION: str = "0.2.0"
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
 
 

@@ -2,7 +2,7 @@
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from health_one.platform.config import get_platform_settings
 from health_one.platform.database import check_db_connection
@@ -40,6 +40,8 @@ async def health_check():
 
 @app.get("/health/db")
 async def health_db_check():
-    """Database health check — verifies Platform DB connectivity."""
+    """Database health check — returns 503 when Platform DB is unavailable."""
     db_status = await check_db_connection()
+    if db_status.get("platform_db") != "ok":
+        raise HTTPException(status_code=503, detail=db_status)
     return {"status": "ok", "service": "platform-api", **db_status}
