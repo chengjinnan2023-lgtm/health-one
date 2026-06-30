@@ -128,7 +128,7 @@ Location: `docs/business/partner`
 
 Purpose: Store-facing one-pagers, partner communication materials, cooperation collateral.
 
-Contains: PARTNER-001 Store Alliance One-Pager V0.3 (Released) — Brand Pack V1.0 标准一页纸商务简报; PARTNER-002 Store Alliance FAQ V0.1（PITCH-001 与 PARTNER-001 配套门店答疑资料）.
+Contains: PARTNER-001 Store Alliance One-Pager V0.3 (Released) — Brand Pack V1.0 标准一页纸商务简报; PARTNER-002 Store Alliance FAQ V0.2 (Released) — Brand Pack V1.0 标准答疑资料.
 
 Audience: Alliance stores, potential sample store owners, operations.
 

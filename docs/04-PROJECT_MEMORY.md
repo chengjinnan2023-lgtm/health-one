@@ -719,15 +719,15 @@ Markdown 知识库：`docs/business/partner/PARTNER-001-Store-Alliance-One-Pager
 
 **2026-06-29**
 
-PARTNER-002｜烯晞健康 Health One 门店合作 FAQ V0.1 已入库，作为 PITCH-001 门店联盟合作方案与 PARTNER-001 一页纸的配套答疑资料。
+PARTNER-002｜Health One 门店合作 FAQ V0.2 已完成品牌统一轻修订。
 
-该文件用于解释项目定位、合作费用、设备责任、AI 赋能、收益边界、落地路径与合规边界，帮助门店老板在合作沟通过程中快速理解 Health One 样板门店联盟合作模式。
+该版本统一采用 Health One｜健康元 作为主表达，烯晞健康作为生态合作品牌，烯灸舱作为当前入口产品，并将 FAQ 校正为标准对外口径，作为 Brand Pack V1.0 的标准答疑资料。
 
-Word 文档：`docs/business/partner/assets/PARTNER-002-Store-Alliance-FAQ-V0.1.docx`
+Word 文档：`docs/business/partner/assets/PARTNER-002-Store-Alliance-FAQ-V0.2.docx`
 
-PDF 文档：`docs/business/partner/assets/PARTNER-002-Store-Alliance-FAQ-V0.1.pdf`
+PDF 文档：`docs/business/partner/assets/PARTNER-002-Store-Alliance-FAQ-V0.2.pdf`
 
-Markdown 知识库：`docs/business/partner/PARTNER-002-Store-Alliance-FAQ-V0.1.md`
+Markdown 知识库：`docs/business/partner/PARTNER-002-Store-Alliance-FAQ-V0.2.md`
 
 **2026-06-30**
 
