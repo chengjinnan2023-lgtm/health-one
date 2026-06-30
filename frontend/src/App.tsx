@@ -13,6 +13,7 @@ import ServiceRecordScreen from "./screens/ServiceRecordScreen";
 import FollowUpQueueScreen from "./screens/FollowUpQueueScreen";
 import ManagerDashboard from "./screens/ManagerDashboard";
 import ManagerStatsScreen from "./screens/ManagerStatsScreen";
+import StaffManagementScreen from "./screens/StaffManagementScreen";
 import HealthAdvisorDashboard from "./screens/HealthAdvisorDashboard";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -43,6 +44,7 @@ function AppRoutes() {
         <Route path="/" element={<HomeScreen />} />
         <Route path="/follow-up-queue" element={<FollowUpQueueScreen />} />
         <Route path="/manager/stats" element={<ManagerStatsScreen />} />
+        <Route path="/staff" element={<StaffManagementScreen />} />
         <Route path="/customers" element={<CustomerSearchScreen />} />
         <Route path="/customers/:id" element={<CustomerSummaryScreen />} />
         <Route
