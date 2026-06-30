@@ -78,6 +78,7 @@ async def search_identities(
     store_id: uuid.UUID | None = Query(None, description="Filter by store"),
     status: str | None = Query(None, pattern="^(pending|active|archived)$"),
     tag: str | None = Query(None, description="Filter by tag (exact match on JSONB array)"),
+    assigned_staff_id: str | None = Query(None, description="Filter by assigned staff (FEATURE-008)"),
     include_archived: bool = Query(False, description="Include archived identities in results"),
     offset: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
@@ -97,6 +98,8 @@ async def search_identities(
         stmt = stmt.where(HealthIdentity.activation_status != "archived")
     if tag:
         stmt = stmt.where(HealthIdentity.tags.contains([tag]))
+    if assigned_staff_id:
+        stmt = stmt.where(HealthIdentity.assigned_staff_id == assigned_staff_id)
 
     stmt = stmt.order_by(HealthIdentity.created_at.desc()).offset(offset).limit(limit)
     result = await db.execute(stmt)

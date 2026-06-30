@@ -102,11 +102,18 @@ export default function HealthAdvisorDashboard() {
       </section>
 
       {/* 快捷入口 */}
-      <button onClick={() => navigate("/customers")}
-        className="w-full bg-blue-600 text-white p-4 rounded-lg text-left hover:bg-blue-700">
-        <p className="font-semibold">进入客户管理</p>
-        <p className="text-sm text-blue-100 mt-1">搜索、新建客户，开始服务</p>
-      </button>
+      <div className="space-y-3">
+        <button onClick={() => navigate("/my-customers")}
+          className="w-full bg-indigo-600 text-white p-4 rounded-lg text-left hover:bg-indigo-700 cursor-pointer">
+          <p className="font-semibold">我的客户</p>
+          <p className="text-sm text-indigo-100 mt-1">查看我负责的客户</p>
+        </button>
+        <button onClick={() => navigate("/customers")}
+          className="w-full bg-blue-600 text-white p-4 rounded-lg text-left hover:bg-blue-700">
+          <p className="font-semibold">客户管理</p>
+          <p className="text-sm text-blue-100 mt-1">搜索、新建客户，开始服务</p>
+        </button>
+      </div>
     </div>
   );
 }
