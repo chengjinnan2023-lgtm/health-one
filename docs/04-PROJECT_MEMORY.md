@@ -739,6 +739,8 @@ Health One 当前已选 Logo 主方向已进入 Temporary Approved Logo v0.1 阶
 
 Health One 已进入 Temporary Approved Logo v0.1 的第一轮替换准备阶段，当前优先纳入替换范围为 PITCH-001 V1.2、PARTNER-001 V0.3、PARTNER-002 V0.2。当前策略是不直接伪造 Logo 文件，而是先形成执行清单，再逐步替换数字品牌资料。
 
+Health One Temporary Logo v0.1 的最小可用资产集结构已建立。当前已明确 4 类核心文件与 1 类建议补充文件的命名、目录与用途，但不伪造正式 SVG / PNG / PDF 文件，待真实导出完成后补充入库。
+
 **2026-06-30**
 
 BRAND-001｜Health One Brand Guideline V1.0 已作为品牌根文档建立 Draft 版本。
