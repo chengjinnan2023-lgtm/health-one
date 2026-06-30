@@ -17,7 +17,11 @@ export default function FollowUpScreen() {
   const [saving, setSaving] = useState(false); const [error, setError] = useState(""); const [planId, setPlanId] = useState<string | null>(null);
 
   const handleCreate = async (e: FormEvent) => {
-    e.preventDefault(); if (!id || !method || !plannedAt) return;
+    e.preventDefault();
+    if (!method || !plannedAt) {
+      setError("请先选择随访方式和计划时间");
+      return;
+    }
     setSaving(true); setError("");
     try {
       const data = await api.post<{ plan_id: string }>(`/api/identities/${id}/plans`, {
@@ -85,11 +89,15 @@ export default function FollowUpScreen() {
               <button key={m.key} type="button" onClick={() => setMethod(m.key)}
                 className={`px-3 py-1.5 rounded-full text-sm border ${method === m.key ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-300 hover:border-blue-400"}`}
                 data-testid={`method-${m.key}`}>{m.label}</button>))}
-          </div></div>
+          </div>
+          {error && !method && <p className="text-red-500 text-xs mt-1">请选择随访方式</p>}
+        </div>
         <div><label className="block text-sm font-medium text-gray-700 mb-1">计划时间 *</label>
           <input type="datetime-local" value={plannedAt} onChange={(e) => setPlannedAt(e.target.value)}
             className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required data-testid="planned-at" /></div>
+            required data-testid="planned-at" />
+          {error && !plannedAt && <p className="text-red-500 text-xs mt-1">请选择计划时间</p>}
+        </div>
         <div><label className="block text-sm font-medium text-gray-700 mb-1">负责员工</label>
           <input type="text" value={staff?.display_name || ""} disabled className="w-full border border-gray-200 rounded px-3 py-2 text-sm bg-gray-50 text-gray-500" /></div>
         <div><label className="block text-sm font-medium text-gray-700 mb-1">备注</label>

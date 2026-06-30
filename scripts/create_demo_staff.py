@@ -62,7 +62,7 @@ async def create_demo_staff():
         print(f"       Role: {staff.role.value}")
         print(f"       Store: {store.store_name} ({store.store_code})")
         print(f"       Staff ID: {staff.staff_id}")
-        print(f"       Status: active")
+        print("       Status: active")
 
 
 if __name__ == "__main__":
