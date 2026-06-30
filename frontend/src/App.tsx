@@ -10,6 +10,8 @@ import ConcernIntakeScreen from "./screens/ConcernIntakeScreen";
 import FeedbackRecordScreen from "./screens/FeedbackRecordScreen";
 import FollowUpScreen from "./screens/FollowUpScreen";
 import ServiceRecordScreen from "./screens/ServiceRecordScreen";
+import ManagerDashboard from "./screens/ManagerDashboard";
+import HealthAdvisorDashboard from "./screens/HealthAdvisorDashboard";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -17,6 +19,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
+}
+
+function HomeScreen() {
+  const { staff } = useAuth();
+  if (staff?.role === "店长") return <ManagerDashboard />;
+  return <HealthAdvisorDashboard />;
 }
 
 function AppRoutes() {
@@ -30,7 +38,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="/" element={<Navigate to="/customers" replace />} />
+        <Route path="/" element={<HomeScreen />} />
         <Route path="/customers" element={<CustomerSearchScreen />} />
         <Route path="/customers/:id" element={<CustomerSummaryScreen />} />
         <Route
