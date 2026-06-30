@@ -106,7 +106,7 @@ Location: `docs/brand`
 
 Purpose: Brand materials, pitch decks, cooperation proposals, store alliance documents.
 
-Contains: BRAND-001 Brand Guideline V1.0 (Draft) — 已完成 8 个章节的 Draft 版本，作为 Brand & Design Office 的品牌根文档; PITCH-001 Store Alliance Plan V1.1.
+Contains: BRAND-001 Brand Guideline V1.0 (Draft) — 已完成 8 个章节的 Draft 版本，作为 Brand & Design Office 的品牌根文档; PITCH-001 Store Alliance Plan V1.2 (Released) — Brand Pack V1.0 主路演资料.
 
 Audience: Founder, Brand & Design Office, alliance stores.
 

@@ -745,6 +745,16 @@ BRAND-001｜Health One Brand Guideline V1.0 已补充 Chapter 7｜Logo Rules 与
 
 至此，BRAND-001 Draft 已形成 8 章完整结构，可作为后续 Logo、PPT、FAQ、一页纸、官网与宣传资料的统一品牌依据。
 
+**2026-06-30**
+
+PITCH-001｜Health One 门店联盟合作方案 V1.2 已完成品牌统一轻修订。
+
+该版本统一采用 Health One｜健康元 作为平台主表达，烯晞健康作为生态合作品牌，烯灸舱作为当前入口产品，并将部分标题升级为观点式标题，作为 Brand Pack V1.0 的主路演资料。
+
+PPT 正式文件：`docs/brand/assets/PITCH-001-Health-One-Store-Alliance-Plan-V1.2.pptx`
+
+Markdown 知识库：`docs/brand/pitch/PITCH-001-Health-One-Store-Alliance-Plan-V1.2.md`
+
 ---
 
 ## 26. End of Document
