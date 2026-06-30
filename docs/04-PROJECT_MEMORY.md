@@ -707,15 +707,15 @@ Markdown 知识库文档：`docs/brand/pitch/PITCH-001-Health-One-Store-Alliance
 
 **2026-06-29**
 
-PARTNER-001｜烯晞健康 Health One 门店联盟合作方案 V0.2 已入库，作为 PITCH-001 门店联盟合作方案的配套一页纸。
+PARTNER-001｜Health One 门店联盟合作方案 V0.3 已完成品牌统一轻修订。
 
-该文件用于微信发送、会前预热和门店老板快速了解合作模式，重点表达：Health One 不是给门店增加一个项目，而是帮助门店建立未来十年的客户经营能力。
+该版本统一采用 Health One｜健康元 作为主表达，烯晞健康作为生态合作品牌，烯灸舱作为当前入口产品，并进一步压缩解释性文字，作为 Brand Pack V1.0 的标准一页纸商务简报。
 
-Word 文档：`docs/business/partner/assets/PARTNER-001-Store-Alliance-One-Pager-V0.2.docx`
+Word 文档：`docs/business/partner/assets/PARTNER-001-Store-Alliance-One-Pager-V0.3.docx`
 
-PDF 文档：`docs/business/partner/assets/PARTNER-001-Store-Alliance-One-Pager-V0.2.pdf`
+PDF 文档：`docs/business/partner/assets/PARTNER-001-Store-Alliance-One-Pager-V0.3.pdf`
 
-Markdown 知识库：`docs/business/partner/PARTNER-001-Store-Alliance-One-Pager-V0.2.md`
+Markdown 知识库：`docs/business/partner/PARTNER-001-Store-Alliance-One-Pager-V0.3.md`
 
 **2026-06-29**
 
