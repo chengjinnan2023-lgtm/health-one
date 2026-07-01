@@ -731,6 +731,18 @@ Markdown 知识库：`docs/business/partner/PARTNER-002-Store-Alliance-FAQ-V0.2.
 
 **2026-07-01**
 
+PARTNER-001｜Health One 门店联盟合作方案 V0.4 已完成与 PITCH-001 V1.3 的同步轻修订。该版本统一将"押金"调整为"设备保证金"，补充"健康元属于客户本人"与"门店是接入点"的表达，并继续保持门店前置、健康元赋能的品牌口径。
+
+DOCX 文件：`docs/business/partner/assets/PARTNER-001-Store-Alliance-One-Pager-V0.4.docx`
+
+PDF 文件：`docs/business/partner/assets/PARTNER-001-Store-Alliance-One-Pager-V0.4.pdf`
+
+Markdown 知识库：`docs/business/partner/PARTNER-001-Store-Alliance-One-Pager-V0.4.md`
+
+修订说明：`docs/business/partner/PARTNER-001-V0.4-Revision-Note.md`
+
+**2026-07-01**
+
 PITCH-001｜Health One 门店联盟合作方案 V1.3 已完成基于最新品牌与产品协同原则的轻修订。该版本统一将"押金"调整为"设备保证金"，明确健康元属于客户本人、门店是接入点，并强化"门店前置、健康元赋能"的品牌表达。
 
 PPT 正式文件：`docs/brand/assets/PITCH-001-Health-One-Store-Alliance-Plan-V1.3.pptx`

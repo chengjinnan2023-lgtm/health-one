@@ -140,7 +140,7 @@ Location: `docs/business/partner`
 
 Purpose: Store-facing one-pagers, partner communication materials, cooperation collateral.
 
-Contains: PARTNER-001 Store Alliance One-Pager V0.3 (Released) — Brand Pack V1.0 标准一页纸商务简报; PARTNER-002 Store Alliance FAQ V0.2 (Released) — Brand Pack V1.0 标准答疑资料.
+Contains: PARTNER-001 Store Alliance One-Pager V0.4 (Released) — Brand Pack V1.0 标准一页纸商务简报，已与 PITCH-001 V1.3 同步（押金→设备保证金、健康元属于客户、门店是接入点）; PARTNER-002 Store Alliance FAQ V0.2 (Released) — Brand Pack V1.0 标准答疑资料.
 
 Audience: Alliance stores, potential sample store owners, operations.
 
