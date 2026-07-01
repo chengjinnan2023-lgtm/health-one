@@ -60,8 +60,9 @@ def _validate_role(role: str) -> StaffRole:
 
 @router.get("/", response_model=list[StaffResponse])
 async def list_staff(staff: Staff = Depends(get_current_staff)):
-    """List all staff in the current store. 仅店长."""
-    _require_manager(staff)
+    """List all staff in the current store. 所有已认证角色可查看（用于分配下拉等场景）."""
+    # Note: GET is open to all authenticated roles for assignment dropdowns (FEATURE-008A).
+    # POST/PATCH/reset-password remain manager-only.
 
     async with _get_session_factory()() as session:
         result = await session.execute(

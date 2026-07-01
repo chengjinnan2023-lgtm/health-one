@@ -15,7 +15,6 @@ interface StaffOption { staff_id: string; display_name: string; role: string; }
 export default function FollowUpScreen() {
   const { id } = useParams<{ id: string }>(); const navigate = useNavigate(); const { staff } = useAuth();
   const canManageFollowUp = staff?.role !== "服务人员";
-  const isManager = staff?.role === "店长";
   const [reason, setReason] = useState(""); const [method, setMethod] = useState("");
   const [plannedAt, setPlannedAt] = useState(""); const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false); const [error, setError] = useState(""); const [planId, setPlanId] = useState<string | null>(null);
@@ -27,12 +26,12 @@ export default function FollowUpScreen() {
     if (!id) return;
     Promise.all([
       api.get<{ assigned_staff_id: string | null }>(`/api/identities/${id}`).catch(() => null),
-      isManager ? api.get<StaffOption[]>("/api/staff/").catch(() => []) : Promise.resolve([]),
+      canManageFollowUp ? api.get<StaffOption[]>("/api/staff/").catch(() => []) : Promise.resolve([]),
     ]).then(([identity, staffList]) => {
       if (identity?.assigned_staff_id) setAssignedTo(identity.assigned_staff_id);
       setStaffOptions(staffList as StaffOption[]);
     });
-  }, [id, isManager]);
+  }, [id, canManageFollowUp]);
 
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
