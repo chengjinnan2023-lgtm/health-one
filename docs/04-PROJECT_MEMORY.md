@@ -729,6 +729,16 @@ PDF 文档：`docs/business/partner/assets/PARTNER-002-Store-Alliance-FAQ-V0.2.p
 
 Markdown 知识库：`docs/business/partner/PARTNER-002-Store-Alliance-FAQ-V0.2.md`
 
+**2026-07-01**
+
+PITCH-001｜Health One 门店联盟合作方案 V1.3 已完成基于最新品牌与产品协同原则的轻修订。该版本统一将"押金"调整为"设备保证金"，明确健康元属于客户本人、门店是接入点，并强化"门店前置、健康元赋能"的品牌表达。
+
+PPT 正式文件：`docs/brand/assets/PITCH-001-Health-One-Store-Alliance-Plan-V1.3.pptx`
+
+Markdown 知识库：`docs/brand/pitch/PITCH-001-Health-One-Store-Alliance-Plan-V1.3.md`
+
+修订报告：`docs/brand/pitch/PITCH-001-V1.3-Revision-Report.md`
+
 **2026-06-30**
 
 Health One Logo 主方向已收敛到第二张已选版本，并已建立 3 份品牌基础文档：LOGO-008（最终选定方向说明）、LOGO-012（Logo 资产结构草案）、LOGO-013（Logo 使用规范）。当前先不入库过程展示板图片，待正式整理后补充。
